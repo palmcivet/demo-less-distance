@@ -1,0 +1,144 @@
+nav#bg {
+	background-image: url("../../asset/login.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	z-index: -10;
+}
+
+main {
+	position: absolute;
+	right: 18%;
+	top: 50%;
+	font-size: 14px;
+	transform: translateY(-50%);
+	// background: rgba(255, 255, 255, 0.04);
+	background: rgba(255, 255, 255, 0.777);
+	box-shadow: rgba(0, 0, 0, 0.75) -1px 4px 28px 0px;
+	z-index: 99;
+	padding: 30px;
+}
+
+div.login-box {
+	width: 260px;
+	height: 360px;
+	grid-template-columns: repeat(2, 1fr);
+	grid-template-rows: 1.3fr 0.5fr repeat(4, 1fr) 0.5fr;
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	place-items: center;
+	display: grid;
+
+	@radius: 3px;
+	@width: 200px;
+	@height: 30px;
+
+	h1 {
+		grid-row-start: 1;
+		grid-row-end: 2;
+		grid-column-start: 1;
+		grid-column-end: 3;
+		color: transparent;
+		-webkit-text-stroke: 2px black;
+		letter-spacing: 0.04em;
+		font-family: Georgia, serif;
+		font-size: 35px;
+	}
+
+	div.option-s,
+	div.option-t {
+		font-size: 14px;
+		grid-row-start: 2;
+		grid-row-end: 3;
+	}
+
+	div.option-s {
+		grid-column-start: 1;
+		grid-column-end: 2;
+	}
+
+	div.option-t {
+		grid-column-start: 2;
+		grid-column-end: 3;
+	}
+
+	#username,
+	#password,
+	#verify,
+	#code {
+		border-radius: @radius;
+		border: rgba(203, 189, 189, 0.633) 1px solid;
+		text-align: center;
+		height: @height;
+		font-size: 15px;
+	}
+
+	#username {
+		grid-column-start: 1;
+		grid-column-end: 3;
+		grid-row-start: 3;
+		grid-row-end: 4;
+		width: @width;
+	}
+
+	#password {
+		grid-column-start: 1;
+		grid-column-end: 3;
+		grid-row-start: 4;
+		grid-row-end: 5;
+		width: @width;
+	}
+
+	#verify {
+		grid-row-start: 5;
+		grid-row-end: 6;
+		grid-column-start: 1;
+		grid-column-end: 2;
+		width: @width / 2;
+		justify-self: flex-end;
+	}
+
+	#code {
+		grid-row-start: 5;
+		grid-row-end: 6;
+		grid-column-start: 2;
+		grid-column-end: 3;
+		width: @width / 2;
+		justify-self: flex-start;
+		border: none;
+	}
+
+	button {
+		grid-row-start: 6;
+		grid-row-end: 7;
+		grid-column-start: 1;
+		grid-column-end: 3;
+
+		width: @width;
+		height: @height;
+		cursor: pointer;
+		font-size: 16px;
+		text-align: center;
+		color: white;
+		background-color: rgb(82, 216, 192);
+		border-radius: @radius;
+		border-style: none;
+	}
+
+	div.help {
+		grid-row-start: 7;
+		grid-row-end: 8;
+		grid-column-start: 1;
+		grid-column-end: 3;
+		text-align: center;
+
+		a {
+			font-size: 14px;
+			text-decoration: none;
+		}
+	}
+}
