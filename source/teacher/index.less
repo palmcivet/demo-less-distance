@@ -1,7 +1,8 @@
 @import "../static/style/index.less";
+@import "icon.less";
 
 article.dais {
-	@width-toolbox: 50px;
+	@width-toolbox: 40px;
 
 	display: flex;
 	flex-direction: column;
@@ -10,14 +11,24 @@ article.dais {
 
 	section {
 		max-width: 1024px + @width-toolbox;
-		max-height: 576px; // 16：9
+		max-height: 576px; // 16:9
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 
 		aside {
 			width: @width-toolbox;
-			height: 100%;
+			background-color: #f7f7f7;
+
+			ul {
+				list-style: none;
+				padding-left: 0;
+				text-align: center;
+
+				li {
+					cursor: pointer;
+				}
+			}
 		}
 	}
 
