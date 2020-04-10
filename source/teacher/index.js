@@ -19,7 +19,7 @@ const config = {
 	canvasCtx: null, // canvas 的 context
 	paintNode: null, // paint 节点，通过 ID 获取
 	paintCtx: null, // paint 的 context
-	proxyNode: null,
+	proxyNode: null, // 文本工具的 canvas 代理
 };
 
 const store = {
@@ -46,8 +46,8 @@ $(document).ready(() => {
 		config.paintCtx = config.paintNode.getContext("2d");
 		config.paintNode.fillStyle = "rgba(255, 255, 255, 0)";
 		pdfjsLib.workerSrc = config.libSrc;
-		// 生成标注工具
 
+		// 生成工具栏
 		let ul = typeStyle.map((i, j) => `<li>${genIcon(j)}</li>`);
 		$("ul").append(ul);
 		for (let item = 0; item < typeStyle.length; item++) {
@@ -57,19 +57,17 @@ $(document).ready(() => {
 			}
 		}
 
+		// 就绪后设置监听器
 		config.proxyNode.addEventListener("compositionstart", (e) => {
 			e.target.inputStatus = "CHINESE_TYPING";
-			console.log("start");
 		});
 		config.proxyNode.addEventListener("input", (e) => {
 			if (e.target.inputStatus !== "CHINESE_TYPING") {
-				console.log(e.target.inputStatus);
 				toolBox[typeStyle[5]](store.mouseDown, e.target.value);
 			}
 		});
 		config.proxyNode.addEventListener("compositionend", (e) => {
 			setTimeout(() => {
-				console.log("end");
 				e.target.inputStatus = "CHINESE_TYPE_END";
 				toolBox[typeStyle[5]](store.mouseDown, e.target.value);
 			}, 100);
@@ -89,6 +87,10 @@ $("#upload")[0].addEventListener("change", () => {
 				config.paintNode.addEventListener("mousedown", (event) => {
 					if (store.type === 5) {
 						config.proxyNode.value = null;
+						$("#proxy").css({
+							left: event.clientX,
+							top: event.clientY,
+						});
 					}
 					store.mouseDown = windowToCanvas(event.clientX, event.clientY);
 					store.dragging = true;
