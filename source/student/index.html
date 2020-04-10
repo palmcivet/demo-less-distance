@@ -1,0 +1,44 @@
+<html lang="zh">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>PDF Share</title>
+	<link rel="stylesheet/less" type="text/css" href="index.less" />
+	<script src="../../lib/less.min.js"></script>
+	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
+</head>
+
+<body>
+	<script src="../../lib/jquery.min.js"></script>
+	<script src="../../lib/pdf.min.js"></script>
+	<!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
+	<!-- <script src="https://cdn.bootcss.com/pdf.js/2.4.456/pdf.min.js"></script> -->
+
+	<main>
+		<aside class="discus">
+			<header>讨论区</header>
+		</aside>
+		<article class="dais">
+			<section>
+				<canvas id="canvas-node" width="600px" hidden="500px"></canvas>
+				<canvas id="canvas-paint" width="600px" height="500px"></canvas>
+			</section>
+			<nav>
+				<button>截图</button>
+				<button>静音</button>
+			</nav>
+		</article>
+		<aside class="function"">
+			<header>我的笔记</header>
+		</aside>
+	</main>
+
+	<script src="script/utils.js"></script>
+	<script src="script/index.js"></script>
+
+	<!-- TEST 验证 -->
+	<script src="script/other.js"></script>
+</body>
+
+</html>

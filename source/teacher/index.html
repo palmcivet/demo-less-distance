@@ -1,0 +1,56 @@
+<html lang="zh">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>教师端</title>
+	<link rel="stylesheet/less" type="text/css" href="index.less" />
+	<script src="../../lib/less.min.js"></script>
+	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
+</head>
+
+<body>
+	<script src="../../lib/jquery.min.js"></script>
+	<script src="../../lib/pdf.min.js"></script>
+	<!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
+	<!-- <script src="https://cdn.bootcss.com/pdf.js/2.4.456/pdf.min.js"></script> -->
+
+	<main>
+		<aside class="discus">
+			<header>讨论区</header>
+		</aside>
+		<article class="dais">
+			<header></header>
+			<section>
+				<aside> 工具箱 </aside>
+				<div>
+					<canvas id="canvas-paint" width="600px" height="500px"></canvas>
+					<canvas id="canvas-node" width="600px" height="500px"></canvas>
+				</div>
+			</section>
+			<footer>
+				<button onclick="turnPrevPage()">上一页</button>
+				<button onclick="turnNextPage()">下一页</button>
+				<button onclick="zoomIn()">放大</button>
+				<button onclick="zoomOut()">缩小</button>
+			</footer>
+		</article>
+		<aside class="function">
+			<button>开始课程</button>
+			<button>结束课程</button>
+			<button>暂停录音</button>
+			<div>
+				<label for="upload">上传演讲稿</label>
+				<input id="upload" type="file" accept=".pdf" />
+			</div>
+		</aside>
+	</main>
+
+	<script src="utils.js"></script>
+	<script src="index.js"></script>
+
+	<!-- TEST 验证 -->
+	<script src="other.js"></script>
+</body>
+
+</html>

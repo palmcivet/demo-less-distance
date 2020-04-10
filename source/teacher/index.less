@@ -1,0 +1,38 @@
+@import "../static/style/index.less";
+
+article.dais {
+	@width-toolbox: 50px;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+
+	section {
+		max-width: 1024px + @width-toolbox;
+		max-height: 576px; // 16：9
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		aside {
+			width: @width-toolbox;
+			height: 100%;
+		}
+	}
+
+	nav {
+		margin-top: 10px;
+	}
+}
+
+#canvas-node {
+	-webkit-box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+	box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+#canvas-paint {
+	position: absolute;
+	z-index: 10;
+}
