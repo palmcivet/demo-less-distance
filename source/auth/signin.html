@@ -5,15 +5,15 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 	<title>无距远程课堂 登录</title>
-	<link rel="stylesheet/less" type="text/css" href="./style/signin.less" />
+	<link rel="stylesheet/less" type="text/css" href="index.less" />
 	<!-- DEV -->
-	<script src="./lib/less.min.js"></script>
+	<script src="../../lib/less.min.js"></script>
 	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
 </head>
 
 <body>
 	<!-- DEV -->
-	<script src="./lib/jquery.min.js"></script>
+	<script src="../../lib/jquery.min.js"></script>
 	<!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
 	<nav id="bg"></nav>
 	<main>
@@ -22,28 +22,28 @@
 
 			<div class="option-s">
 				<label for="stud">学生</label>
-				<input id="stud" type="radio">
+				<input id="stud" type="radio" name="usertype" value="false">
 			</div>
 			<div class="option-t">
 				<label for="teac">教师</label>
-				<input id="teac" type="radio">
+				<input id="teac" type="radio" name="usertype" value="true">
 			</div>
 
-			<input id="username" type="text" placeholder="账   号" />
-			<input id="password" type="password" placeholder="密   码" />
+			<input id="username" type="text" placeholder="账       号" />
+			<input id="password" type="password" placeholder="密       码" />
 			<input id="verify" type="text" placeholder="输入验证码" />
 			<div id="code"></div>
 
-			<button onclick="login()">登 陆</button>
+			<button onclick="signin()">登 陆</button>
 
 			<div class="help">
 				<a href="/">忘了密码？</a>
-				<a href="/signup.html">没有账号？</a>
+				<a href="signup.html">没有账号？</a>
 			</div>
 		</div>
 	</main>
-	<script src="./script/verify.js"></script>
-	<script src="./script/login.js"></script>
+	<script src="verify.js"></script>
+	<script src="index.js"></script>
 </body>
 
 </html>

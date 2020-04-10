@@ -31,9 +31,9 @@ const store = {
 	drawingSurface: null, // 保存绘图表面
 	mouseDown: null, // 保存鼠标按下时的 canvas 坐标
 	dragging: false, // 标识鼠标是否处于拖拽状态
-	color: "red",
-	size: 14,
-	type: 0,
+	color: "red", //笔触颜色
+	size: 14, // 笔触粗细
+	type: 0, //笔触类型
 };
 
 $(document).ready(() => {
@@ -97,11 +97,21 @@ $("#upload")[0].addEventListener("change", () => {
 					saveDrawingSurface();
 				});
 				config.paintNode.addEventListener("mousemove", (event) => {
-					if (store.dragging && store.type !== 0 && store.type !== 5) {
-						restoreDrawingSurface();
-						let mouseMove = windowToCanvas(event.clientX, event.clientY);
-						let toolId = typeStyle[store.type];
-						toolBox[toolId](mouseMove);
+					let mouseMove = windowToCanvas(event.clientX, event.clientY);
+					if (
+						mouseMove.x <= config.paintNode.width ||
+						mouseMove.y <= config.paintNode.height
+					) {
+						if (store.type === 5) {
+							event.target.style["cursor"] = "text";
+						} else if (store.type === 0) {
+							event.target.style["cursor"] = "default";
+						} else if (store.dragging && store.type !== 0) {
+							event.target.style["cursor"] = "crosshair";
+							restoreDrawingSurface();
+							let toolId = typeStyle[store.type];
+							toolBox[toolId](mouseMove);
+						}
 					}
 				});
 				config.paintNode.addEventListener("mouseup", (event) => {

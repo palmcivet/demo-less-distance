@@ -33,32 +33,35 @@ const zoomOut = () => {
 };
 
 const zoomIn = () => {
+	saveDrawingSurface();
+	config.paintCtx.scale(store.currentScale + 0.1, store.currentScale + 0.1);
 	gotoPage(store.currentPage, store.currentScale + 0.1);
+	restoreDrawingSurface();
 };
 
 // 将浏览器客户区坐标转换为 canvas 坐标
-function windowToCanvas(clientX, clientY) {
+const windowToCanvas = (clientX, clientY) => {
 	let axisCanvas = config.paintNode.getBoundingClientRect();
 	return {
 		x: clientX - axisCanvas.left,
 		y: clientY - axisCanvas.top,
 	};
-}
+};
 
 // 保存 canvas 绘图表面
-function saveDrawingSurface() {
+const saveDrawingSurface = () => {
 	store.drawingSurface = config.paintCtx.getImageData(
 		0,
 		0,
 		config.paintNode.width,
 		config.paintNode.height
 	);
-}
+};
 
 // 恢复 canvas 绘图表面
-function restoreDrawingSurface() {
+const restoreDrawingSurface = () => {
 	config.paintCtx.putImageData(store.drawingSurface, 0, 0);
-}
+};
 
 // 生成图标
 const genIcon = (classId, isSelected = false) => {
@@ -79,8 +82,6 @@ const changeType = (typeId) => {
 // 修改颜色
 
 const toolBox = {
-	//  ["arrow", "line", "rectangle", "triangle", "circle", "text", "pen",	"eraser", "undo", "redo"]
-
 	line: (mouseMove) => {
 		config.paintCtx.beginPath(); // 清除当前路径
 		config.paintCtx.moveTo(store.mouseDown.x, store.mouseDown.y);

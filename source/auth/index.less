@@ -1,5 +1,5 @@
 nav#bg {
-	background-image: url("../../asset/auth.jpg");
+	background-image: url(../static/auth.jpg);
 	background-repeat: no-repeat;
 	background-size: cover;
 	position: fixed;
@@ -69,6 +69,7 @@ div.login-box {
 	#username,
 	#password,
 	#verify,
+	#repeat,
 	#code {
 		border-radius: @radius;
 		border: rgba(203, 189, 189, 0.633) 1px solid;
@@ -94,22 +95,30 @@ div.login-box {
 	}
 
 	#verify {
-		grid-row-start: 5;
-		grid-row-end: 6;
 		grid-column-start: 1;
 		grid-column-end: 2;
+		grid-row-start: 5;
+		grid-row-end: 6;
 		width: @width / 2;
 		justify-self: flex-end;
 	}
 
 	#code {
-		grid-row-start: 5;
-		grid-row-end: 6;
 		grid-column-start: 2;
 		grid-column-end: 3;
+		grid-row-start: 5;
+		grid-row-end: 6;
 		width: @width / 2;
 		justify-self: flex-start;
 		border: none;
+	}
+
+	#repeat {
+		grid-column-start: 1;
+		grid-column-end: 3;
+		grid-row-start: 5;
+		grid-row-end: 6;
+		width: @width;
 	}
 
 	button {

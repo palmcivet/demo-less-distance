@@ -1,13 +1,47 @@
+<!DOCTYPE html>
 <html lang="zh">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
     <title>无距远程课堂 注册</title>
+    <link rel="stylesheet/less" type="text/css" href="index.less" />
+    <!-- DEV -->
+    <script src="../../lib/less.min.js"></script>
+    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
 </head>
 
 <body>
+    <!-- DEV -->
+    <script src="../../lib/jquery.min.js"></script>
+    <!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
+    <nav id="bg"></nav>
+    <main>
+        <div class="login-box">
+            <h1>无距远程课堂</h1>
 
+            <div class="option-s">
+                <label for="stud">学生</label>
+                <input id="stud" type="radio" name="usertype" value="false">
+            </div>
+            <div class="option-t">
+                <label for="teac">教师</label>
+                <input id="teac" type="radio" name="usertype" value="true">
+            </div>
+
+            <input id="username" type="text" placeholder="账       号" />
+            <input id="password" type="password" placeholder="密       码" />
+            <input id="repeat" type="password" placeholder="确认密码">
+
+            <button onclick="signup()">注册</button>
+
+            <div class="help">
+                <a href="/">忘了密码？</a>
+                <a href="/">已有账号？</a>
+            </div>
+        </div>
+    </main>
+    <script src="index.js"></script>
 </body>
 
 </html>
