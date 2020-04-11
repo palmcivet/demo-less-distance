@@ -120,6 +120,10 @@ const changeType = (typeId) => {
 // 修改粗细
 
 // 修改颜色
+const changeColor = (color) => {
+	store.color = color;
+	// TODO 同步信息
+};
 
 const toolBox = {
 	line: (mouseMove) => {
@@ -150,7 +154,7 @@ const toolBox = {
 		config.paintCtx.stroke();
 	},
 	text: (mouseMove, text) => {
-		config.paintCtx.font = "16px 'SFPing Fang'";
+		config.paintCtx.font = "16px 'SFPing Fang', sans-serif";
 		config.paintCtx.fillStyle = store.color;
 		config.paintCtx.fillText(text, mouseMove.x, mouseMove.y);
 	},

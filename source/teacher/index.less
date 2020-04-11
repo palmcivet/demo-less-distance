@@ -22,12 +22,21 @@ article.dais {
 
 			ul {
 				list-style: none;
-				padding-left: 0;
+				padding: 0;
+				margin: 0;
 				text-align: center;
 
 				li {
 					cursor: pointer;
 				}
+			}
+
+			div#picker {
+				width: 16px;
+				height: 16px;
+				margin: 6px auto 15px auto;
+				cursor: pointer;
+				position: relative;
 			}
 		}
 	}
@@ -48,10 +57,16 @@ article.dais {
 	z-index: 10;
 }
 
-#proxy {
+#input-proxy,
+#textarea-proxy {
 	position: absolute;
 	z-index: -10;
 	border-style: none;
 	width: 0px;
 	height: 0px;
+}
+
+#input-proxy {
+	bottom: 0;
+	left: 0;
 }

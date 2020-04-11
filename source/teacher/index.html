@@ -26,10 +26,13 @@
 			<section>
 				<aside>
 					<ul></ul>
+					<div id="picker">
+						<input id="input-proxy" class="jscolor {onFineChange:'updateColor(this)'}" value="ab2567">
+					</div>
 				</aside>
 				<div>
 					<canvas id="canvas-paint" width="960px" height="540px"></canvas>
-					<textarea id="proxy"></textarea>
+					<textarea id="textarea-proxy"></textarea>
 					<canvas id="canvas-node" width="960px" height="540px"></canvas>
 				</div>
 			</section>
@@ -55,6 +58,7 @@
 	</main>
 
 	<script src="config.js"></script>
+	<script src="jscolor.js"></script>
 	<script src="utils.js"></script>
 	<script src="index.js"></script>
 </body>
