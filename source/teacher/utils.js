@@ -8,7 +8,7 @@ const gotoPage = (page, scale = null) =>
 			do {
 				optimScale += 0.1;
 				viewport = resPage.getViewport({ scale: optimScale });
-			} while (viewport.width < 960);
+			} while (viewport.width + 40 < 960 && viewport.height + 40 < 540);
 			store.currentScale = optimScale;
 		} else if (scale !== null) {
 			store.currentScale = scale;
@@ -19,6 +19,8 @@ const gotoPage = (page, scale = null) =>
 			viewport: viewport,
 		};
 		resPage.render(renderContext);
+		config.canvasNode.width = viewport.width;
+		config.canvasNode.height = viewport.height;
 		config.paintNode.width = viewport.width;
 		config.paintNode.height = viewport.height;
 	});
@@ -45,7 +47,7 @@ const turnToPage = (page) => {
 	if (page === NaN) {
 		// TODO 优化警告
 		alert("请输入数值");
-	} else if (store.pdfPageNum < page && 0 > page) {
+	} else if (store.pdfPageNum < page || 0 > page) {
 		// TODO 优化警告
 		alert("页数超范围");
 	} else {

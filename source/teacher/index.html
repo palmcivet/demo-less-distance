@@ -36,8 +36,8 @@
 			<footer>
 				<button onclick="turnToPage(1)">首页</button>
 				<button onclick="turnPrevPage()">上一页</button>
-				<input id="gotoPage" placeholder="跳转页面"></input>
-				<button onclick='turnToPage(parseInt($("#gotoPage").val()))'>跳转</button>
+				<input id="gotoPage" onkeydown="goto(event)" placeholder="跳转页面"></input>
+				<button onclick="goto()">跳转</button>
 				<button onclick="turnNextPage()">下一页</button>
 				<button onclick="turnToPage(store.pdfPageNum)">末页</button>
 			</footer>

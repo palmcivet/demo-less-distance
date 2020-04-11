@@ -45,6 +45,7 @@ $("#load")[0].addEventListener("change", () => {
 			(pdf) => {
 				store.pdfContent = pdf;
 				store.pdfPageNum = store.pdfContent._pdfInfo.numPages;
+				store.currentScale = null;
 				gotoPage((store.currentPage = 1));
 				// 设置监听器
 				config.paintNode.addEventListener("mousedown", (event) => {
@@ -91,3 +92,11 @@ $("#load")[0].addEventListener("change", () => {
 		);
 	};
 });
+
+const goto = (e = null) => {
+	if (e === null) {
+		turnToPage(parseInt($("#gotoPage").val()));
+	} else if (e.keyCode === 13) {
+		turnToPage(parseInt($("#gotoPage").val()));
+	}
+};
