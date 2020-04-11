@@ -1,42 +1,72 @@
-const gotoPage = (page, scale = 1) => {
-	store.pdfContent.getPage(page).then(
-		(resPage) => {
-			let viewport = resPage.getViewport({ scale });
-			let canvas = config.canvasNode;
-			let context = config.canvasCtx;
-			canvas.height = viewport.height;
-			canvas.width = viewport.width;
-			let renderContext = {
-				canvasContext: context,
-				viewport: viewport,
-			};
-			resPage.render(renderContext);
-			store.currentScale = viewport.scale;
-			config.paintNode.width = viewport.width;
-			config.paintNode.height = viewport.height;
-		},
-		// TODO: 优化提示
-		() => alert("页数超范围")
-	);
-};
+const gotoPage = (page, scale = null) =>
+	store.pdfContent.getPage(page).then((resPage) => {
+		let viewport;
+		let context = config.canvasCtx;
+		// 首次加载使用最佳缩放比例
+		if (null === store.currentScale) {
+			let optimScale = 0.9;
+			do {
+				optimScale += 0.1;
+				viewport = resPage.getViewport({ scale: optimScale });
+			} while (viewport.width < 960);
+			store.currentScale = optimScale;
+		} else if (scale !== null) {
+			store.currentScale = scale;
+		}
+		viewport = resPage.getViewport({ scale: store.currentScale });
+		let renderContext = {
+			canvasContext: context,
+			viewport: viewport,
+		};
+		resPage.render(renderContext);
+		config.paintNode.width = viewport.width;
+		config.paintNode.height = viewport.height;
+	});
 
 const turnPrevPage = () => {
-	gotoPage(--store.currentPage);
+	if (0 >= store.currentPage - 1) {
+		// TODO: 优化提示
+		alert("已到达第一页");
+	} else {
+		gotoPage(--store.currentPage);
+	}
 };
 
 const turnNextPage = () => {
-	gotoPage(++store.currentPage);
+	if (store.pdfPageNum < store.currentPage + 1) {
+		// TODO: 优化提示
+		alert("已到达最后页");
+	} else {
+		gotoPage(++store.currentPage);
+	}
+};
+
+const turnToPage = (page) => {
+	if (page === NaN) {
+		// TODO 优化警告
+		alert("请输入数值");
+	} else if (store.pdfPageNum < page && 0 > page) {
+		// TODO 优化警告
+		alert("页数超范围");
+	} else {
+		gotoPage((store.currentPage = page));
+	}
 };
 
 const zoomOut = () => {
-	gotoPage(store.currentPage, store.currentScale - 0.1);
+	if (store.currentScale <= 0.8) {
+		// TODO 警告
+	} else {
+		gotoPage(store.currentPage, store.currentScale - 0.1);
+	}
 };
 
 const zoomIn = () => {
-	saveDrawingSurface();
-	config.paintCtx.scale(store.currentScale + 0.1, store.currentScale + 0.1);
-	gotoPage(store.currentPage, store.currentScale + 0.1);
-	restoreDrawingSurface();
+	if (store.currentScale >= 1.2) {
+		// TODO 警告
+	} else {
+		gotoPage(store.currentPage, store.currentScale + 0.1);
+	}
 };
 
 // 将浏览器客户区坐标转换为 canvas 坐标
@@ -60,7 +90,15 @@ const saveDrawingSurface = () => {
 
 // 恢复 canvas 绘图表面
 const restoreDrawingSurface = () => {
-	config.paintCtx.putImageData(store.drawingSurface, 0, 0);
+	config.paintCtx.putImageData(
+		store.drawingSurface,
+		0,
+		0,
+		0,
+		0,
+		config.paintNode.width,
+		config.paintNode.height
+	);
 };
 
 // 生成图标
