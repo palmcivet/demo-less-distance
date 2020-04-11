@@ -92,15 +92,7 @@ const saveDrawingSurface = () => {
 
 // 恢复 canvas 绘图表面
 const restoreDrawingSurface = () => {
-	config.paintCtx.putImageData(
-		store.drawingSurface,
-		0,
-		0,
-		0,
-		0,
-		config.paintNode.width,
-		config.paintNode.height
-	);
+	config.paintCtx.putImageData(store.drawingSurface, 0, 0);
 };
 
 // 生成图标

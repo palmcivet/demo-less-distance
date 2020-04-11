@@ -8,9 +8,9 @@ $(document).ready(() => {
 		config.paintNode = $("#canvas-paint")[0];
 		config.paintCtx = config.paintNode.getContext("2d");
 		config.paintNode.fillStyle = "rgba(255, 255, 255, 0)";
-		pdfjsLib.workerSrc = config.libSrc;
 
 		// 加载 PDF 的监听及回调
+		pdfjsLib.workerSrc = config.libSrc;
 		$("#load")[0].addEventListener("change", () => {
 			let fr = new FileReader();
 			fr.readAsArrayBuffer($("#load")[0].files[0]);

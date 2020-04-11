@@ -21,15 +21,17 @@ const config = {
 	paintNode: null, // paint 节点，通过 ID 获取
 	paintCtx: null, // paint 的 context
 	proxyNode: null, // 文本工具的 textarea 代理
-	pickerNode: null, //拾色器的 input 代理
+	pickerNode: null, // 拾色器的 input 代理
 };
 
 const store = {
 	pdfContent: null, // `getDocument()` 返回的值
 	pdfPageNum: 0, // PDF 页数
+	pdfStorage: [], // 保存每一页标注
 	currentPage: 0, // 当前页
 	currentScale: null, // 缩放比例
 	// 绘图
+	drawingStack: [], // 历史记录栈
 	drawingSurface: null, // 保存绘图表面
 	mouseDown: null, // 保存鼠标按下时的 canvas 坐标
 	dragging: false, // 标识鼠标是否处于拖拽状态
