@@ -21,7 +21,7 @@ $(document).ready(() => {
 						store.pdfContent = pdf;
 						store.pdfPageNum = store.pdfContent._pdfInfo.numPages;
 						store.currentScale = null;
-						gotoPage((store.currentPage = 1));
+						gotoPdfPage((store.currentPage = 1));
 						// 设置监听器
 						config.paintNode.addEventListener("mousedown", (event) => {
 							if (store.type === 5) {
@@ -82,7 +82,6 @@ $(document).ready(() => {
 		}
 
 		// 文本工具的 textarea 代理
-		config.proxyNode = $("#textarea-proxy")[0];
 		config.proxyNode.addEventListener("compositionstart", (e) => {
 			e.target.inputStatus = "CHINESE_TYPING";
 		});
@@ -100,7 +99,6 @@ $(document).ready(() => {
 
 		// 拾色器的 input 代理
 		$("#picker").css("background-color", store.color);
-		config.pickerNode = $("#picker")[0];
 		config.pickerNode.addEventListener("click", (e) => {
 			$("#input-proxy")[0].jscolor.show();
 		});

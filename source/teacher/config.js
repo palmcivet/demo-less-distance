@@ -20,8 +20,9 @@ const config = {
 	canvasCtx: null, // canvas 的 context
 	paintNode: null, // paint 节点，通过 ID 获取
 	paintCtx: null, // paint 的 context
-	proxyNode: null, // 文本工具的 textarea 代理
-	pickerNode: null, // 拾色器的 input 代理
+	proxyNode: $("#textarea-proxy")[0], // 文本工具的 textarea 代理
+	imageNode: $("#img-proxy")[0], // 标注的 img 代理
+	pickerNode: $("#picker")[0], // 拾色器
 };
 
 const store = {
