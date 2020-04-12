@@ -1,4 +1,28 @@
 $(document).ready(() => {
+	user.username = localStorage.getItem("username");
+	user.permission = localStorage.getItem("permission");
+
+	const ws = {
+		socketOnOpen: () => console.log("成功进入教室"),
+		socketOnClose: () => console.log("您已离开教室"),
+		socketOnMessage: (msg) => {
+			message = JSON.parse(msg.data);
+			if (message.type === "chat") {
+				textRecv(message);
+				console.log(message);
+			} else {
+				console.log(msg);
+			}
+		},
+		socketOnError: (e) => {
+			console.log(e);
+		},
+		socketUrl: "wss://www.uiofield.top/lessDistance/websocket",
+	};
+
+	user.communication = new Socket(ws);
+	user.communication.connect();
+
 	if (null === (config.canvasNode = $("#canvas-node")[0])) {
 		alert("您的浏览器不支持 Canvas");
 		return;
@@ -103,22 +127,61 @@ $(document).ready(() => {
 		config.pickerNode.addEventListener("click", (e) => {
 			$("#input-proxy")[0].jscolor.show();
 		});
+
+		$("#chat-box textarea")[0].addEventListener("keydown", (e) => {
+			if (e.keyCode === 13) {
+				if (e.shiftKey && e.target.placeholder === "Shift + Enter 发送") {
+					e.preventDefault();
+					textSubmit();
+				} else if (!e.shiftKey && e.target.placeholder === "Enter 发送") {
+					e.preventDefault();
+					textSubmit();
+				}
+			}
+		});
 	}
 });
 
-const goto = (e) => {
+// 跳转到
+const jumpTo = (e) => {
 	if (e.keyCode === 13) {
 		turnToPage(parseInt(e.target.value));
 	}
 };
 
+// 更改前景色
 const updateColor = (jscolor) => {
 	$("#picker").css({
 		backgroundColor: "#" + jscolor.valueElement.value,
 	});
 };
 
-const begin = (e) => {
+// 切换发送快捷键
+const toggleEnter = () => {
+	let $input = $("#chat-box div label input");
+	let $textarea = $("#chat-box textarea")[0];
+	if ($input.val() === "true") {
+		$textarea.placeholder = "Shift + Enter 发送";
+		$input.val("false");
+	} else {
+		$textarea.placeholder = "Enter 发送";
+		$input.val("true");
+	}
+};
+
+// 提交聊天信息
+const textSubmit = () => {
+	let message = $("#chat-box textarea").val();
+	if (message !== "" && message !== "\n") {
+		sendText({
+			type: "chat",
+			message,
+		});
+	}
+	$("#chat-box textarea").val("");
+};
+
+const beginCourse = (e) => {
 	// TODO 处理逻辑
 	// 开始上课，同时打开录音
 	user.isInClass = !user.isInClass;
@@ -128,7 +191,7 @@ const begin = (e) => {
 		: '<i class="mdui-icon material-icons">power_settings_new</i>开始课程';
 };
 
-const pause = (e) => {
+const pauseCourse = (e) => {
 	// TODO 处理逻辑
 	user.isInClass = !user.isInClass;
 	e.target.innerHTML = user.isInClass

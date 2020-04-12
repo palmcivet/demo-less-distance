@@ -66,7 +66,11 @@ main.main > aside {
 	}
 
 	article {
+		height: 100%;
+		min-width: 300px;
 		margin-top: 10px;
+		margin-bottom: 15px;
+		box-shadow: -2px 2px 7px rgba(77, 77, 77, 0.5);
 	}
 
 	article#function {
@@ -104,11 +108,8 @@ main.main > aside {
 	}
 
 	article#discus {
-		height: 100%;
-		margin-bottom: 15px;
 		display: flex;
 		flex-direction: column;
-		box-shadow: -1px 1px 3px rgba(77, 77, 77, 0.5);
 
 		& > section#chat-member {
 			display: none;
@@ -117,13 +118,46 @@ main.main > aside {
 		& > section#chat-message {
 			height: 100%;
 			border-style: none;
+
+			& > div {
+				margin: 8px 5px;
+				word-break: break-all;
+				word-wrap: break-word;
+				position: relative;
+
+				span:first-child {
+					margin: 5px;
+					max-width: 200px;
+					font-weight: 350;
+					overflow: hidden;
+					white-space: nowrap;
+					display: inline-block;
+					text-overflow: ellipsis;
+				}
+
+				span:nth-child(2) {
+					font-size: 13px;
+					font-weight: 350;
+					position: absolute;
+					right: 7px;
+					top: 7px;
+				}
+
+				p {
+					margin: 5px;
+					padding: 8px;
+					font-size: 16px;
+					border-radius: 5px;
+					background-color: #cdf4b8;
+					box-shadow: -2px 2px 4px #cdf4b8ca;
+				}
+			}
 		}
 
 		& > section#chat-box {
 			@height-tool: 30px;
 			@height-text: 120px;
 
-			height: @height-tool + @height-text;
 			width: 100%;
 			position: relative;
 			border-radius: 2px;
@@ -131,11 +165,18 @@ main.main > aside {
 			& > div {
 				height: @height-tool;
 				display: flex;
+				align-items: center;
 				justify-content: space-between;
 				border-top: solid 1px rgba(217, 217, 217, 0.5);
 				border-bottom: solid 1px rgba(217, 217, 217, 0.5);
 
+				& > label {
+					font-size: 13px;
+				}
+
 				& > button {
+					min-width: 70px;
+					padding: 0;
 				}
 			}
 

@@ -14,7 +14,10 @@ const typeStyle = [
 const user = {
 	isInClass: false, // 是否正在上课
 	isRecord: false, // 是否正在录音
-	courseName: "",
+	courseName: "", // 课程名
+	communication: null, // WS 连接
+	username: "", // 用户名
+	permission: false, // 身份
 };
 
 const config = {
@@ -27,7 +30,7 @@ const config = {
 	proxyNode: $("#textarea-proxy")[0], // 文本工具的 textarea 代理
 	imageNode: $("#img-proxy")[0], // 标注的 img 代理
 	pickerNode: $("#picker")[0], // 拾色器
-	gotoNode: $("#goto")[0], // 跳转输入框
+	jumpNode: $("#jump")[0], // 跳转输入框
 };
 
 const store = {

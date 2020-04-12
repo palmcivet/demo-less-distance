@@ -43,7 +43,7 @@
 				<button title="首页" onclick="turnToPage(1)"><i class="mdui-icon material-icons">first_page</i></button>
 				<button title="上一页" onclick="turnPrevPage()"><i
 						class="mdui-icon material-icons">navigate_before</i></button>
-				<input title="Enter 跳转" onkeydown="goto(event)" id="goto" placeholder="跳转"></input>
+				<input title="Enter 跳转" onkeydown="jumpTo(event)" id="jump" placeholder="跳转"></input>
 				<button title="下一页" onclick="turnNextPage()"><i
 						class="mdui-icon material-icons">navigate_next</i></button>
 				<button title="末页" onclick="turnToPage(store.pdfPageNum)"><i
@@ -73,10 +73,10 @@
 					<input id="load" type="file" accept=".pdf" />
 				</section>
 
-				<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="begin(event)">
+				<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="beginCourse(event)">
 					<i class="mdui-icon material-icons">power_settings_new</i> 开始课程
 				</button>
-				<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="pause(event)">
+				<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="pauseCourse(event)">
 					<i class="mdui-icon material-icons">keyboard_voice</i> 开始录音
 				</button>
 				<button class="mdui-btn mdui-ripple mdui-col-xs-6">
@@ -94,9 +94,10 @@
 				</section>
 				<section id="chat-box">
 					<div>
-						<label>Enter 切换</label>
-						<input type="checkbox">
-						<button class="mdui-btn mdui-ripple mdui-btn-dense">
+						<label>
+							<input type="checkbox" value="false" onchange="toggleEnter()"> Enter
+						</label>
+						<button class="mdui-btn mdui-ripple mdui-btn-dense" onclick="textSubmit()">
 							<i class="mdui-icon material-icons">send</i> 发送
 						</button>
 					</div>

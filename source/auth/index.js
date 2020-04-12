@@ -26,6 +26,11 @@ function signin(e = null) {
 				}),
 				success: function (data) {
 					if (data.code === 1) {
+						localStorage.setItem("username", $("#username").val());
+						localStorage.setItem(
+							"permission",
+							$("input[name='usertype']:checked").val()
+						);
 						if (data.info === true) {
 							window.location = path + "/teacher/index.html";
 						} else {
