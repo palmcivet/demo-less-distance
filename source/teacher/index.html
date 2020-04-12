@@ -55,34 +55,57 @@
 				<a href="#function" class="mdui-ripple">
 					<i class="mdui-icon material-icons">settings</i> 功能区
 				</a>
-				<a href="#discus" class="mdui-ripple">
+				<a href="#discus" class="mdui-ripple mdui-tab-active">
 					<i class="mdui-icon material-icons">chat</i> 讨论区
 				</a>
 			</nav>
 
-			<article id="function">
-				<div class="mdui-btn mdui-ripple">
+			<article id="function" class="mdui-container">
+				<div class="mdui-textfield mdui-textfield-floating-label">
+					<label class="mdui-textfield-label">课程名</label>
+					<input class="mdui-textfield-input" type="text" onchange="chengeCourse(event)" />
+				</div>
+
+				<section class="mdui-btn mdui-ripple mdui-color-deep-purple-a400">
 					<label for="load">
 						<i class="mdui-icon material-icons">library_books</i> 加载课件
 					</label>
 					<input id="load" type="file" accept=".pdf" />
-				</div>
-				<button class="mdui-btn mdui-ripple" onclick="begin(event)">
+				</section>
+
+				<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="begin(event)">
 					<i class="mdui-icon material-icons">power_settings_new</i> 开始课程
 				</button>
-				<button class="mdui-btn mdui-ripple" onclick="pause(event)">
+				<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="pause(event)">
 					<i class="mdui-icon material-icons">keyboard_voice</i> 开始录音
 				</button>
-				<button class="mdui-btn mdui-ripple">
+				<button class="mdui-btn mdui-ripple mdui-col-xs-6">
 					<i class="mdui-icon material-icons">cloud_upload</i> 上传课件
 				</button>
-				<button class="mdui-btn mdui-ripple">
-					<i class="mdui-icon material-icons">cloud_download</i> 下载笔记
+				<button class="mdui-btn mdui-ripple mdui-col-xs-6">
+					<i class="mdui-icon material-icons">cloud_download</i> 下载批注
 				</button>
 			</article>
 
-			<article id="discus">
-				<header>讨论区</header>
+			<article id="discus" class="mdui-container">
+				<section id="chat-member">
+				</section>
+				<section id="chat-message">
+				</section>
+				<section id="chat-box">
+					<div>
+						<label>Enter 切换</label>
+						<input type="checkbox">
+						<button class="mdui-btn mdui-ripple mdui-btn-dense">
+							<i class="mdui-icon material-icons">send</i> 发送
+						</button>
+					</div>
+					<textarea placeholder="Shift + Enter 发送" rows="10"></textarea>
+					<button class="mdui-btn mdui-btn-icon mdui-ripple mdui-btn-dense"
+						onclick="$('#chat-box textarea').val('')">
+						<i class="mdui-icon material-icons mdui-btn-dense">clear</i>
+					</button>
+				</section>
 			</article>
 		</aside>
 	</main>

@@ -59,23 +59,100 @@ main.main > article {
 main.main > aside {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
 	width: 100%;
 
 	nav > a {
 		display: inline;
 	}
 
-	#function {
-		& > div > input {
-			visibility: hidden;
+	article {
+		margin-top: 10px;
+	}
+
+	article#function {
+		& > div:first-child {
+			& > input {
+				text-align: center;
+
+				&:focus {
+					cursor: text;
+				}
+			}
+		}
+
+		& > section {
+			margin: 10px;
+			position: relative;
+			display: block;
+
+			& > label {
+				left: 50%;
+				width: 100%;
+				cursor: pointer;
+				position: absolute;
+				transform: translateX(-50%);
+			}
+
+			& > input#load {
+				visibility: hidden;
+			}
 		}
 
 		button {
+			margin: 2px 0;
 		}
 	}
 
-	#discus {
+	article#discus {
+		height: 100%;
+		margin-bottom: 15px;
+		display: flex;
+		flex-direction: column;
+		box-shadow: -1px 1px 3px rgba(77, 77, 77, 0.5);
+
+		& > section#chat-member {
+			display: none;
+		}
+
+		& > section#chat-message {
+			height: 100%;
+			border-style: none;
+		}
+
+		& > section#chat-box {
+			@height-tool: 30px;
+			@height-text: 120px;
+
+			height: @height-tool + @height-text;
+			width: 100%;
+			position: relative;
+			border-radius: 2px;
+
+			& > div {
+				height: @height-tool;
+				display: flex;
+				justify-content: space-between;
+				border-top: solid 1px rgba(217, 217, 217, 0.5);
+				border-bottom: solid 1px rgba(217, 217, 217, 0.5);
+
+				& > button {
+				}
+			}
+
+			& > textarea {
+				width: 100%;
+				height: @height-text;
+				border-style: none;
+				resize: none;
+				padding: 5px;
+			}
+
+			& > button {
+				position: absolute;
+				bottom: 0;
+				right: 0;
+			}
+		}
 	}
 }
 
