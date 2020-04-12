@@ -1,5 +1,5 @@
-const path = "http://localhost:8080/lessDistance";
-//const path = "https://www.uiofield.top/lessDistance";
+// const path = "http://localhost:8080/lessDistance";
+const path = "https://www.uiofield.top/lessDistance";
 
 let verifyCode = new GVerify({ id: "code" });
 

@@ -1,4 +1,9 @@
-const gotoPdfPage = (page, scale = null) =>
+function gotoPage(page) {
+	// 保存笔记
+	store.pdfStorage[store.currentPage] = config.paintNode.toDataURL("image/png", 1);
+
+	// 切换页面
+	store.currentPage = page;
 	store.pdfContent.getPage(page).then((resPage) => {
 		let viewport;
 		// 首次加载使用最佳缩放比例
@@ -11,8 +16,6 @@ const gotoPdfPage = (page, scale = null) =>
 				viewport = resPage.getViewport({ scale: optimScale });
 			} while (viewport.width + 40 < 960 && viewport.height + 40 < 540);
 			store.currentScale = optimScale;
-		} else if (scale !== null) {
-			store.currentScale = scale;
 		}
 		viewport = resPage.getViewport({ scale: store.currentScale });
 		resPage.render({
@@ -27,14 +30,20 @@ const gotoPdfPage = (page, scale = null) =>
 		}
 	});
 
+	// 加载笔记
+	config.paintCtx.clearRect(0, 0, config.paintNode.width, config.paintNode.width);
+	if (undefined !== (img = store.pdfStorage[page])) {
+		config.imageNode.src = img;
+		$("#img-proxy").ready(() => config.paintCtx.drawImage(config.imageNode, 0, 0));
+	}
+}
+
 const turnPrevPage = () => {
 	if (0 >= store.currentPage - 1) {
 		// TODO: 优化提示
 		alert("已到达第一页");
 	} else {
-		gotoNotePage(store.currentPage, true);
-		gotoPdfPage(--store.currentPage);
-		gotoNotePage(store.currentPage, false);
+		gotoPage(store.currentPage - 1);
 	}
 };
 
@@ -43,9 +52,7 @@ const turnNextPage = () => {
 		// TODO: 优化提示
 		alert("已到达最后页");
 	} else {
-		gotoNotePage(store.currentPage, true);
-		gotoPdfPage(++store.currentPage);
-		gotoNotePage(store.currentPage, false);
+		gotoPage(store.currentPage + 1);
 	}
 };
 
@@ -57,25 +64,7 @@ const turnToPage = (page) => {
 		// TODO 优化警告
 		alert("页数超范围");
 	} else {
-		gotoNotePage(store.currentPage, true);
-		gotoPdfPage((store.currentPage = page));
-		gotoNotePage(store.currentPage, false);
-	}
-};
-
-const zoomOut = () => {
-	if (store.currentScale <= 0.8) {
-		// TODO 警告
-	} else {
-		gotoPdfPage(store.currentPage, store.currentScale - 0.1);
-	}
-};
-
-const zoomIn = () => {
-	if (store.currentScale >= 1.2) {
-		// TODO 警告
-	} else {
-		gotoPdfPage(store.currentPage, store.currentScale + 0.1);
+		gotoPage(page);
 	}
 };
 
@@ -86,21 +75,6 @@ const windowToCanvas = (clientX, clientY) => {
 		x: clientX - axisCanvas.left,
 		y: clientY - axisCanvas.top,
 	};
-};
-
-const gotoNotePage = (objPage, mode) => {
-	if (mode) {
-		// 保存
-		let tmpImage = config.paintNode.toDataURL("image/png", 1);
-		store.pdfStorage[objPage] = tmpImage;
-	} else {
-		// 加载
-		config.paintCtx.clearRect(0, 0, config.paintNode.width, config.paintNode.width);
-		if (undefined !== (img = store.pdfStorage[objPage])) {
-			config.imageNode.src = img;
-			config.paintCtx.drawImage(config.imageNode, 0, 0);
-		}
-	}
 };
 
 // 保存 canvas 绘图表面
@@ -116,6 +90,10 @@ const saveDrawingSurface = () => {
 // 恢复 canvas 绘图表面
 const restoreDrawingSurface = () => {
 	config.paintCtx.putImageData(store.drawingSurface, 0, 0);
+};
+
+const uploadPdf = () => {
+	store.pdfContent.getData().then((res) => console.log(res)); // Uint8Array
 };
 
 // 生成图标

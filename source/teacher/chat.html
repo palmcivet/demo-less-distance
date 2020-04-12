@@ -175,3 +175,36 @@
             e.keyCode === 13 && sendMsgToServer();
         };
     </script>
+    <script>
+        class WrappedCanvas {
+            constructor(canvasCtx) {
+                this.ctx = canvasCtx;
+                this.width = this.ctx.width;
+                this.height = this.ctx.height;
+                this.executionArray = [];
+            }
+            drawImage(...params) {
+                // TODO 节流
+                this.executionArray.push({
+                    method: "drawImage",
+                    params: params,
+                });
+                this.ctx.drawImage(...params);
+            }
+            clear() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+            }
+            undo() {
+                if (this.executionArray.length > 0) {
+                    this.clear();
+                    this.executionArray.pop();
+                    // 逐个执行绘图动作进行重绘
+                    for (let exe of this.executionArray) {
+                        this[exe.method](...exe.params);
+                    }
+                }
+            }
+            redo() { }
+        }
+    </script>
+</body>

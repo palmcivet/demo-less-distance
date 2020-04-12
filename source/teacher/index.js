@@ -21,7 +21,8 @@ $(document).ready(() => {
 						store.pdfContent = pdf;
 						store.pdfPageNum = store.pdfContent._pdfInfo.numPages;
 						store.currentScale = null;
-						gotoPdfPage((store.currentPage = 1));
+						store.pdfStorage = [];
+						gotoPage(1);
 						// 设置监听器
 						config.paintNode.addEventListener("mousedown", (event) => {
 							if (store.type === 5) {
