@@ -4,6 +4,8 @@ function gotoPage(page) {
 
 	// 切换页面
 	store.currentPage = page;
+	config.gotoNode.placeholder = store.currentPage + " / " + store.pdfPageNum;
+
 	store.pdfContent.getPage(page).then((resPage) => {
 		let viewport;
 		// 首次加载使用最佳缩放比例
@@ -57,15 +59,16 @@ const turnNextPage = () => {
 };
 
 const turnToPage = (page) => {
-	if (page === NaN) {
+	if (isNaN(page)) {
 		// TODO 优化警告
 		alert("请输入数值");
-	} else if (store.pdfPageNum < page || 0 > page) {
+	} else if (store.pdfPageNum < page || 0 >= page) {
 		// TODO 优化警告
 		alert("页数超范围");
 	} else {
 		gotoPage(page);
 	}
+	config.gotoNode.value = "";
 };
 
 // 将浏览器客户区坐标转换为 canvas 坐标

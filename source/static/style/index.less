@@ -7,22 +7,15 @@
 	}
 }
 
-main {
+main.main {
 	display: grid;
-	grid-template-columns: 1fr 3.5fr 1fr;
+	grid-template-columns: 0px 3fr 1fr;
 	grid-template-rows: 1fr;
-	grid-column-gap: 0px;
+	grid-column-gap: 40px;
 	grid-row-gap: 0px;
 	width: 100%;
 	height: 100%;
 	place-content: center;
-
-	& > aside:first-child {
-		grid-row-start: 1;
-		grid-row-end: 2;
-		grid-column-start: 1;
-		grid-column-end: 2;
-	}
 
 	& > article {
 		grid-row-start: 1;
@@ -31,7 +24,8 @@ main {
 		grid-column-end: 3;
 	}
 
-	& > aside:last-child {
+	& > aside {
+		justify-self: end;
 		grid-row-start: 1;
 		grid-row-end: 2;
 		grid-column-start: 3;

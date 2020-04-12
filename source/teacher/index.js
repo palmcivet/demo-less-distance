@@ -106,11 +106,9 @@ $(document).ready(() => {
 	}
 });
 
-const goto = (e = null) => {
-	if (e === null) {
-		turnToPage(parseInt($("#gotoPage").val()));
-	} else if (e.keyCode === 13) {
-		turnToPage(parseInt($("#gotoPage").val()));
+const goto = (e) => {
+	if (e.keyCode === 13) {
+		turnToPage(parseInt(e.target.value));
 	}
 };
 
@@ -118,4 +116,22 @@ const updateColor = (jscolor) => {
 	$("#picker").css({
 		backgroundColor: "#" + jscolor.valueElement.value,
 	});
+};
+
+const begin = (e) => {
+	// TODO 处理逻辑
+	// 开始上课，同时打开录音
+	user.isInClass = !user.isInClass;
+	user.isRecord = !user.isRecord;
+	e.target.innerHTML = user.isInClass
+		? '<i class="mdui-icon material-icons">settings_power</i>结束课程'
+		: '<i class="mdui-icon material-icons">power_settings_new</i>开始课程';
+};
+
+const pause = (e) => {
+	// TODO 处理逻辑
+	user.isInClass = !user.isInClass;
+	e.target.innerHTML = user.isInClass
+		? '<i class="mdui-icon material-icons">settings_voice</i>暂停录音'
+		: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
 };

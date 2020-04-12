@@ -11,7 +11,11 @@ const typeStyle = [
 	// "redo",
 ];
 
-const user = {};
+const user = {
+	isInClass: false, // 是否正在上课
+	isRecord: false, // 是否正在录音
+	courseName: "",
+};
 
 const config = {
 	libSrc: "../script/pdf.worker.min.js", // Lib 的 work 目录
@@ -23,6 +27,7 @@ const config = {
 	proxyNode: $("#textarea-proxy")[0], // 文本工具的 textarea 代理
 	imageNode: $("#img-proxy")[0], // 标注的 img 代理
 	pickerNode: $("#picker")[0], // 拾色器
+	gotoNode: $("#goto")[0], // 跳转输入框
 };
 
 const store = {

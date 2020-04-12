@@ -5,56 +5,85 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 	<title>教师端</title>
 	<link rel="stylesheet/less" type="text/css" href="index.less" />
-	<script src="../../lib/less.min.js"></script>
+
 	<!-- DEV -->
+	<script src="../../lib/less.min.js"></script>
 	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
+	<link rel="stylesheet" href="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/css/mdui.min.css">
+	<script src="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/js/mdui.min.js"></script>
 </head>
 
 <body>
+	<!-- DEV -->
 	<script src="../../lib/jquery.min.js"></script>
 	<script src="../../lib/pdf.min.js"></script>
-	<!-- DEV -->
 	<!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
 	<!-- <script src="https://cdn.bootcss.com/pdf.js/2.4.456/pdf.min.js"></script> -->
 
-	<main>
-		<aside class="discus">
-			<header>讨论区</header>
-		</aside>
-		<article class="dais">
-			<header></header>
+	<main class="main">
+		<article>
+			<header id="courseName"></header>
+
 			<section>
-				<aside>
-					<ul></ul>
-					<div id="picker">
-						<input id="input-proxy" class="jscolor {onFineChange:'updateColor(this)'}" value="ff0000">
-					</div>
-				</aside>
 				<div>
 					<canvas id="canvas-paint" width="960px" height="540px"></canvas>
 					<textarea id="textarea-proxy"></textarea>
 					<canvas id="canvas-node" width="960px" height="540px"></canvas>
 					<img id="img-proxy">
 				</div>
+				<aside>
+					<ul></ul>
+					<div id="picker">
+						<input id="input-proxy" class="jscolor {onFineChange:'updateColor(this)'}" value="ff0000">
+					</div>
+				</aside>
 			</section>
+
 			<footer>
-				<button onclick="turnToPage(1)">首页</button>
-				<button onclick="turnPrevPage()">上一页</button>
-				<input id="gotoPage" onkeydown="goto(event)" placeholder="跳转页面"></input>
-				<button onclick="goto()">跳转</button>
-				<button onclick="turnNextPage()">下一页</button>
-				<button onclick="turnToPage(store.pdfPageNum)">末页</button>
+				<button title="首页" onclick="turnToPage(1)"><i class="mdui-icon material-icons">first_page</i></button>
+				<button title="上一页" onclick="turnPrevPage()"><i
+						class="mdui-icon material-icons">navigate_before</i></button>
+				<input title="Enter 跳转" onkeydown="goto(event)" id="goto" placeholder="跳转"></input>
+				<button title="下一页" onclick="turnNextPage()"><i
+						class="mdui-icon material-icons">navigate_next</i></button>
+				<button title="末页" onclick="turnToPage(store.pdfPageNum)"><i
+						class="mdui-icon material-icons">last_page</i></button>
 			</footer>
 		</article>
-		<aside class="function">
-			<button>开始课程</button>
-			<button>结束课程</button>
-			<button>暂停录音</button>
-			<button>上传课件</button>
-			<div>
-				<label for="load">加载课件</label>
-				<input id="load" type="file" accept=".pdf" />
-			</div>
+		<aside>
+			<nav class="mdui-tab" mdui-tab>
+				<a href="#function" class="mdui-ripple">
+					<i class="mdui-icon material-icons">settings</i> 功能区
+				</a>
+				<a href="#discus" class="mdui-ripple">
+					<i class="mdui-icon material-icons">chat</i> 讨论区
+				</a>
+			</nav>
+
+			<article id="function">
+				<div class="mdui-btn mdui-ripple">
+					<label for="load">
+						<i class="mdui-icon material-icons">library_books</i> 加载课件
+					</label>
+					<input id="load" type="file" accept=".pdf" />
+				</div>
+				<button class="mdui-btn mdui-ripple" onclick="begin(event)">
+					<i class="mdui-icon material-icons">power_settings_new</i> 开始课程
+				</button>
+				<button class="mdui-btn mdui-ripple" onclick="pause(event)">
+					<i class="mdui-icon material-icons">keyboard_voice</i> 开始录音
+				</button>
+				<button class="mdui-btn mdui-ripple">
+					<i class="mdui-icon material-icons">cloud_upload</i> 上传课件
+				</button>
+				<button class="mdui-btn mdui-ripple">
+					<i class="mdui-icon material-icons">cloud_download</i> 下载笔记
+				</button>
+			</article>
+
+			<article id="discus">
+				<header>讨论区</header>
+			</article>
 		</aside>
 	</main>
 
