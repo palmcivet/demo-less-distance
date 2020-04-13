@@ -1,4 +1,4 @@
-$(document).ready(() => {
+$(() => {
 	user.username = localStorage.getItem("username");
 	user.permission = localStorage.getItem("permission");
 

@@ -80,7 +80,7 @@ const uploadPdf = () => {
 
 // 发送 WS 信息
 const sendText = (msg) => {
-	if (user.communication) {
+	if (user.communication.ws) {
 		user.communication.sendMessage({
 			username: user.username,
 			permission: user.permission,
@@ -88,18 +88,19 @@ const sendText = (msg) => {
 		});
 	} else {
 		// TODO 错误处理
+		console.log("offline");
 	}
 };
 
 // 收到聊天消息
 const textRecv = (msg) => {
-	$("#chat-message").append(
-		`<div>
-			<span>${msg.username}</span>
-			<span>${new Date().toTimeString().slice(0,8)}</span>
-			<p>${msg.message}</p>
-		</div>`
-	);
+	let div = document.createElement("div");
+	div.innerHTML = `<span>${msg.username}</span>
+					<span>${new Date().toTimeString().slice(0, 8)}</span>`;
+	let p = document.createElement("p");
+	p.innerText = msg.message.replace(/"\n"/g, "<br>");
+	div.appendChild(p);
+	$("#chat-message").append(div);
 };
 
 // 将浏览器客户区坐标转换为 canvas 坐标

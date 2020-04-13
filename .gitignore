@@ -17,6 +17,8 @@ interface.md
 /**/lib/*
 /test/*
 /**/performance.*
+/**/*.zip
+/**/*.rar
 
 # misc
 .DS_Store
