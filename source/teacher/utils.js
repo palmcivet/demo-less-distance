@@ -81,26 +81,12 @@ const uploadPdf = () => {
 // 发送 WS 信息
 const sendText = (msg) => {
 	if (user.communication.ws) {
-		user.communication.sendMessage({
-			username: user.username,
-			permission: user.permission,
-			...msg,
-		});
+		user.communication.sendMessage(msg);
 	} else {
 		// TODO 错误处理
 		console.log("offline");
+		user.communication.connect();
 	}
-};
-
-// 收到聊天消息
-const textRecv = (msg) => {
-	let div = document.createElement("div");
-	div.innerHTML = `<span>${msg.username}</span>
-					<span>${new Date().toTimeString().slice(0, 8)}</span>`;
-	let p = document.createElement("p");
-	p.innerText = msg.message.replace(/"\n"/g, "<br>");
-	div.appendChild(p);
-	$("#chat-message").append(div);
 };
 
 // 将浏览器客户区坐标转换为 canvas 坐标

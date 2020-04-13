@@ -170,16 +170,40 @@ const toggleEnter = () => {
 };
 
 // 提交聊天信息
-const textSubmit = () => {
-	let message = $("#chat-box textarea").val();
-	if (message !== "" && message !== "\n") {
+function textSubmit() {
+	let msg = $("#chat-box textarea").val();
+
+	if (msg !== "" && msg !== "\n") {
 		sendText({
 			type: "chat",
-			message,
+			name: user.username,
+			role: user.permission,
+			msg,
 		});
 	}
 	$("#chat-box textarea").val("");
-};
+}
+
+// 处理聊天消息
+function textRecv(msg) {
+	let div = document.createElement("div");
+	if (msg.name === user.username) {
+		div.setAttribute("class", "self");
+	} else {
+		if (msg.role) {
+			div.setAttribute("class", "teac");
+		} else {
+			div.setAttribute("class", "stud");
+		}
+	}
+	div.innerHTML = `<span>${msg.name}</span>
+	<span>${new Date().toTimeString().slice(0, 8)}</span>`;
+	let p = document.createElement("p");
+	p.innerText = msg.msg.replace(/"\n"/g, "<br>");
+	div.appendChild(p);
+	$("#chat-message").append(div);
+	$("#chat-message").scrollTop();
+}
 
 const beginCourse = (e) => {
 	// TODO 处理逻辑
