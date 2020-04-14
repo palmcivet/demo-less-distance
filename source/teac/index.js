@@ -157,7 +157,7 @@ const updateColor = (jscolor) => {
 };
 
 // 切换发送快捷键
-const toggleEnter = () => {
+function toggleEnter() {
 	let $input = $("#chat-box div label input");
 	let $textarea = $("#chat-box textarea")[0];
 	if ($input.val() === "true") {
@@ -167,7 +167,7 @@ const toggleEnter = () => {
 		$textarea.placeholder = "Enter 发送";
 		$input.val("true");
 	}
-};
+}
 
 // 提交聊天信息
 function textSubmit() {

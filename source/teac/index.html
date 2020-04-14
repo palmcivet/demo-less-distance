@@ -52,13 +52,39 @@
 		</article>
 		<aside>
 			<nav class="mdui-tab" mdui-tab>
-				<a href="#function" class="mdui-ripple">
-					<i class="mdui-icon material-icons">settings</i> 功能区
-				</a>
 				<a href="#discus" class="mdui-ripple mdui-tab-active">
 					<i class="mdui-icon material-icons">chat</i> 讨论区
 				</a>
+				<a href="#function" class="mdui-ripple">
+					<i class="mdui-icon material-icons">settings</i> 功能区
+				</a>
 			</nav>
+
+			<article id="discus" class="mdui-container">
+				<section id="chat-member">
+				</section>
+				<section id="chat-message">
+				</section>
+				<section id="chat-box">
+					<div>
+						<label title="切换发送快捷键">
+							<input type="checkbox" value="false" onchange="toggleEnter()"> Enter
+						</label>
+						<button class="mdui-btn mdui-ripple mdui-btn-dense" title="清空消息"
+							onclick="$('#chat-message').empty()">
+							<i class="mdui-icon material-icons">clear_all</i>
+						</button>
+						<button class="mdui-btn mdui-ripple mdui-btn-dense" title="发送消息" onclick="textSubmit()">
+							<i class="mdui-icon material-icons">send</i>
+						</button>
+					</div>
+					<textarea placeholder="Shift + Enter 发送" rows="10"></textarea>
+					<button class="mdui-btn mdui-btn-icon mdui-ripple mdui-btn-dense" title="清除"
+						onclick="$('#chat-box textarea').val('')">
+						<i class="mdui-icon material-icons mdui-btn-dense">clear</i>
+					</button>
+				</section>
+			</article>
 
 			<article id="function" class="mdui-container">
 				<div class="mdui-textfield mdui-textfield-floating-label">
@@ -85,32 +111,6 @@
 				<button class="mdui-btn mdui-ripple mdui-col-xs-6">
 					<i class="mdui-icon material-icons">cloud_download</i> 下载批注
 				</button>
-			</article>
-
-			<article id="discus" class="mdui-container">
-				<section id="chat-member">
-				</section>
-				<section id="chat-message">
-				</section>
-				<section id="chat-box">
-					<div>
-						<label title="切换发送快捷键">
-							<input type="checkbox" value="false" onchange="toggleEnter()"> Enter
-						</label>
-						<button class="mdui-btn mdui-ripple mdui-btn-dense" title="清空消息"
-							onclick="$('#chat-message').empty()">
-							<i class="mdui-icon material-icons">clear_all</i>
-						</button>
-						<button class="mdui-btn mdui-ripple mdui-btn-dense" title="发送消息" onclick="textSubmit()">
-							<i class="mdui-icon material-icons">send</i>
-						</button>
-					</div>
-					<textarea placeholder="Shift + Enter 发送" rows="10"></textarea>
-					<button class="mdui-btn mdui-btn-icon mdui-ripple mdui-btn-dense" title="清除"
-						onclick="$('#chat-box textarea').val('')">
-						<i class="mdui-icon material-icons mdui-btn-dense">clear</i>
-					</button>
-				</section>
 			</article>
 		</aside>
 	</main>

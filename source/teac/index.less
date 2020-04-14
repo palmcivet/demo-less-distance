@@ -80,40 +80,6 @@ main.main > aside {
 		box-shadow: -2px 2px 7px rgba(77, 77, 77, 0.5);
 	}
 
-	article#function {
-		& > div:first-child {
-			& > input {
-				text-align: center;
-
-				&:focus {
-					cursor: text;
-				}
-			}
-		}
-
-		& > section {
-			margin: 10px;
-			position: relative;
-			display: block;
-
-			& > label {
-				left: 50%;
-				width: 100%;
-				cursor: pointer;
-				position: absolute;
-				transform: translateX(-50%);
-			}
-
-			& > input#load {
-				visibility: hidden;
-			}
-		}
-
-		button {
-			margin: 2px 0;
-		}
-	}
-
 	article#discus {
 		display: flex;
 		flex-direction: column;
@@ -229,6 +195,40 @@ main.main > aside {
 				bottom: 0;
 				left: 0;
 			}
+		}
+	}
+
+	article#function {
+		& > div:first-child {
+			& > input {
+				text-align: center;
+
+				&:focus {
+					cursor: text;
+				}
+			}
+		}
+
+		& > section {
+			margin: 10px;
+			position: relative;
+			display: block;
+
+			& > label {
+				left: 50%;
+				width: 100%;
+				cursor: pointer;
+				position: absolute;
+				transform: translateX(-50%);
+			}
+
+			& > input#load {
+				visibility: hidden;
+			}
+		}
+
+		button {
+			margin: 2px 0;
 		}
 	}
 }

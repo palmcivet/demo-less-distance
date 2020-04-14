@@ -73,7 +73,10 @@ const turnToPage = (page) => {
 
 // 上传课件
 const uploadPdf = () => {
-	store.pdfContent.getData().then((res) => console.log(res)); // Uint8Array
+	store.pdfContent.getData().then((res) => {
+		console.log(res);
+		return res;
+	}); // Uint8Array
 };
 
 // 下载笔记

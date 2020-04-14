@@ -1,0 +1,78 @@
+<html lang="zh">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>学生端</title>
+	<link rel="stylesheet/less" type="text/css" href="index.less" />
+	<!-- DEV -->
+	<script src="../../lib/less.min.js"></script>
+	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
+	<link rel="stylesheet" href="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/css/mdui.min.css">
+	<script src="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/js/mdui.min.js"></script>
+</head>
+
+<body>
+	<script src="../../lib/jquery.min.js"></script>
+	<script src="../../lib/pdf.min.js"></script>
+	<!-- DEV -->
+	<!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
+	<!-- <script src="https://cdn.bootcss.com/pdf.js/2.4.456/pdf.min.js"></script> -->
+
+	<main class="main">
+		<article>
+			<header id="courseName"></header>
+
+			<section>
+				<canvas id="canvas-paint" width="960px" height="540px"></canvas>
+				<canvas id="canvas-node" width="960px" height="540px"></canvas>
+				<img id="img-proxy">
+			</section>
+		</article>
+		<aside>
+			<nav class="mdui-tab" mdui-tab>
+				<a href="#discus" class="mdui-ripple mdui-tab-active">
+					<i class="mdui-icon material-icons">chat</i> 讨论区
+				</a>
+				<a href="#note" class="mdui-ripple">
+					<i class="mdui-icon material-icons">event_note</i> 笔记区
+				</a>
+			</nav>
+
+			<article id="discus" class="mdui-container">
+				<section id="chat-member">
+				</section>
+				<section id="chat-message">
+				</section>
+				<section id="chat-box">
+					<div>
+						<label title="切换发送快捷键">
+							<input type="checkbox" value="false" onchange="toggleEnter()"> Enter
+						</label>
+						<button class="mdui-btn mdui-ripple mdui-btn-dense" title="清空消息"
+							onclick="$('#chat-message').empty()">
+							<i class="mdui-icon material-icons">clear_all</i>
+						</button>
+						<button class="mdui-btn mdui-ripple mdui-btn-dense" title="发送消息" onclick="textSubmit()">
+							<i class="mdui-icon material-icons">send</i>
+						</button>
+					</div>
+					<textarea placeholder="Shift + Enter 发送" rows="10"></textarea>
+					<button class="mdui-btn mdui-btn-icon mdui-ripple mdui-btn-dense" title="清除"
+						onclick="$('#chat-box textarea').val('')">
+						<i class="mdui-icon material-icons mdui-btn-dense">clear</i>
+					</button>
+				</section>
+			</article>
+
+			<article id="note" class="mdui-container">
+			</article>
+		</aside>
+	</main>
+
+	<script src="config.js"></script>
+	<script src="utils.js"></script>
+	<script src="index.js"></script>
+</body>
+
+</html>
