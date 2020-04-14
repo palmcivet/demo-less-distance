@@ -1,19 +1,16 @@
 $(() => {
 	user.username = localStorage.getItem("username");
-	user.permission = localStorage.getItem("permission");
+	user.permission = localStorage.getItem("permission") === "true" ? true : false;
 
 	const ws = {
-		socketOnOpen: () => console.log("成功进入教室"),
+		socketOnOpen: () =>
+			sendText({
+				type: wsType.enter,
+				name: user.username,
+				role: user.permission,
+			}),
 		socketOnClose: () => console.log("您已离开教室"),
-		socketOnMessage: (msg) => {
-			message = JSON.parse(msg.data);
-			if (message.type === "chat") {
-				textRecv(message);
-				console.log(message);
-			} else {
-				console.log(msg);
-			}
-		},
+		socketOnMessage: (msg) => handler(msg),
 		socketOnError: (e) => {
 			console.log(e);
 		},
@@ -76,7 +73,7 @@ $(() => {
 								} else if (store.dragging && store.type !== 0) {
 									event.target.style["cursor"] = "crosshair";
 									restoreDrawingSurface();
-									let toolId = typeStyle[store.type];
+									let toolId = lineStyle[store.type];
 									toolBox[toolId](mouseMove);
 								}
 							}
@@ -97,9 +94,9 @@ $(() => {
 		});
 
 		// 生成工具栏
-		const ul = typeStyle.map((i, j) => `<li>${genIcon(j)}</li>`);
+		const ul = lineStyle.map((i, j) => `<li>${genIcon(j)}</li>`);
 		$("ul").append(ul);
-		for (let item = 0; item < typeStyle.length; item++) {
+		for (let item = 0; item < lineStyle.length; item++) {
 			$("ul li")[item].onclick = () => changeType(item);
 			if (item === 0) {
 				changeType(0, true);
@@ -112,13 +109,13 @@ $(() => {
 		});
 		config.proxyNode.addEventListener("input", (e) => {
 			if (e.target.inputStatus !== "CHINESE_TYPING") {
-				toolBox[typeStyle[5]](store.mouseDown, e.target.value);
+				toolBox[lineStyle[5]](store.mouseDown, e.target.value);
 			}
 		});
 		config.proxyNode.addEventListener("compositionend", (e) => {
 			setTimeout(() => {
 				e.target.inputStatus = "CHINESE_TYPE_END";
-				toolBox[typeStyle[5]](store.mouseDown, e.target.value);
+				toolBox[lineStyle[5]](store.mouseDown, e.target.value);
 			}, 100);
 		});
 
@@ -184,41 +181,101 @@ function textSubmit() {
 	$("#chat-box textarea").val("");
 }
 
-// 处理聊天消息
-function textRecv(msg) {
+const recvText = (message) => {
 	let div = document.createElement("div");
-	if (msg.name === user.username) {
+	if (message.name === user.username) {
 		div.setAttribute("class", "self");
 	} else {
-		if (msg.role) {
+		if (message.role) {
 			div.setAttribute("class", "teac");
 		} else {
 			div.setAttribute("class", "stud");
 		}
 	}
-	div.innerHTML = `<span>${msg.name}</span>
-	<span>${new Date().toTimeString().slice(0, 8)}</span>`;
+	div.innerHTML = `<span>${message.name}</span>
+<span>${new Date().toTimeString().slice(0, 8)}</span>`;
 	let p = document.createElement("p");
-	p.innerText = msg.msg.replace(/"\n"/g, "<br>");
+	p.innerText = message.msg.replace(/"\n"/g, "<br>");
 	div.appendChild(p);
 	$("#chat-message").append(div);
-	$("#chat-message").scrollTop();
-}
+	$("#chat-message")[0].scrollTop = $("#chat-message")[0].scrollHeight;
+};
 
-const beginCourse = (e) => {
+const recvNotify = (notify, mode) => {
+	if (notify.type == wsType.enter) {
+		let div = document.createElement("div");
+
+		if (notify.role) {
+			div.setAttribute("class", "notify t");
+		} else {
+			div.setAttribute("class", "notify s");
+		}
+
+		div.innerHTML = `<span>${
+			notify.name.length > 16 ? notify.name.slice(16) + "..." : notify.name
+		}</span><span> ${mode ? "进入教室" : "已离开教室"}</span>`;
+		$("#chat-message").append(div);
+		$("#chat-message")[0].scrollTop = $("#chat-message")[0].scrollHeight;
+	}
+};
+
+const toggleCourse = (e) => {
 	// TODO 处理逻辑
+	sendText({
+		type: wsType.begin,
+		name: user.username,
+	});
+
 	// 开始上课，同时打开录音
-	user.isInClass = !user.isInClass;
-	user.isRecord = !user.isRecord;
-	e.target.innerHTML = user.isInClass
+	user.class.isInClass = !user.class.isInClass;
+	user.class.isRecord = !user.class.isRecord;
+	e.target.innerHTML = user.class.isInClass
 		? '<i class="mdui-icon material-icons">settings_power</i>结束课程'
 		: '<i class="mdui-icon material-icons">power_settings_new</i>开始课程';
 };
 
-const pauseCourse = (e) => {
+const toggleRecord = (e) => {
 	// TODO 处理逻辑
-	user.isInClass = !user.isInClass;
-	e.target.innerHTML = user.isInClass
+	e.target.innerHTML = user.class.isInClass
 		? '<i class="mdui-icon material-icons">settings_voice</i>暂停录音'
 		: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
+};
+
+const handler = (msg) => {
+	message = JSON.parse(msg.data);
+	console.log(message);
+
+	switch (message.type) {
+		case wsType.enter:
+			recvNotify(message, true);
+			if (message.class) {
+				user.class.speaker = message.class.speaker;
+				user.class.courseName = message.class.course;
+				user.class.onlineCount = message.class.count;
+				user.class.startTime = message.class.beginning;
+			}
+			break;
+		case wsType.leave:
+			recvNotify(message, false);
+			user.class.onlineCount--;
+			break;
+		case wsType.chat:
+			recvText(message);
+			break;
+		case wsType.begin:
+			user.class.speaker = message.class.speaker;
+			user.class.courseName = message.class.course;
+			break;
+		case wsType.finish:
+			user.class = null;
+			// TODO 提示
+			break;
+		case wsType.slide:
+			break;
+		case wsType.note:
+			break;
+		default:
+			console.log(msg);
+			break;
+	}
 };

@@ -117,7 +117,7 @@ main.main > aside {
 
 			& > div.stud,
 			& > div.teac {
-				margin: 12px 40px 0 5px;
+				margin: 12px 40px 10px 5px;
 
 				span:first-child {
 					margin-left: 5px;
@@ -138,15 +138,10 @@ main.main > aside {
 			& > div.teac > span:first-child {
 				color: #ff8933;
 				font-weight: 400;
-
-				::before {
-					content: "教师";
-					display: inline;
-				}
 			}
 
 			& > div.self {
-				margin: 12px 5px 0 40px;
+				margin: 12px 5px 10px 40px;
 
 				span:first-child {
 					visibility: hidden;
@@ -155,6 +150,25 @@ main.main > aside {
 				p {
 					background-color: #c9ddff;
 					box-shadow: -1px 1px 3px #8faad8ca;
+				}
+			}
+
+			& > div.notify {
+				margin: 8px auto;
+				padding: 2px;
+				max-width: 180px;
+				text-align: center;
+				border-radius: 6px;
+				background-color: #eef0e8bd;
+
+				span {
+					font-size: 13px;
+					font-weight: 350;
+					position: unset;
+				}
+
+				&.t span:first-child {
+					color: #ff8933;
 				}
 			}
 		}

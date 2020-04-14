@@ -1,6 +1,6 @@
 $(() => {
 	user.username = localStorage.getItem("username");
-	user.permission = localStorage.getItem("permission");
+	user.permission = localStorage.getItem("permission") === "true" ? true : false;
 
 	const ws = {
 		socketOnOpen: () => console.log("成功进入教室"),

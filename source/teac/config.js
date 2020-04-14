@@ -1,4 +1,15 @@
-const typeStyle = [
+const wsType = {
+	chat: "chat",
+	enter: "enter",
+	leave: "leave",
+	begin: "begin",
+	finish: "finish",
+	slide: "slide",
+	note: "note",
+	record: "record",
+};
+
+const lineStyle = [
 	"arrow",
 	"line",
 	"rectangle",
@@ -12,9 +23,14 @@ const typeStyle = [
 ];
 
 const user = {
-	isInClass: false, // 是否正在上课
-	isRecord: false, // 是否正在录音
-	courseName: "", // 课程名
+	class: {
+		isInClass: false, // 是否正在上课
+		isRecord: false, // 是否正在录音
+		speaker: "",
+		courseName: "", // 课程名
+		onlineCount: 0,
+		startTime: "",
+	},
 	communication: null, // WS 连接
 	username: "", // 用户名
 	permission: false, // 身份

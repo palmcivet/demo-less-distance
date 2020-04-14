@@ -87,8 +87,9 @@ const sendText = (msg) => {
 		user.communication.sendMessage(msg);
 	} else {
 		// TODO 错误处理
-		console.log("offline");
+		console.log("已掉线，正在帮您重连");
 		user.communication.connect();
+		setTimeout(() => sendText(msg), 2000);
 	}
 };
 
@@ -119,8 +120,8 @@ const restoreDrawingSurface = () => {
 // 生成图标
 const genIcon = (classId, isSelected = false) => {
 	return isSelected
-		? "<i class='" + typeStyle[classId] + " selected" + "'></i>"
-		: "<i class='" + typeStyle[classId] + "'></i>";
+		? "<i class='" + lineStyle[classId] + " selected" + "'></i>"
+		: "<i class='" + lineStyle[classId] + "'></i>";
 };
 
 // 修改线型
