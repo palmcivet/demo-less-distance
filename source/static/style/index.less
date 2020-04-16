@@ -46,4 +46,30 @@ main.main {
 		grid-column-start: 3;
 		grid-column-end: 4;
 	}
+
+	& > div#notify-box {
+		position: fixed;
+		top: 5%;
+		left: 10px;
+
+		p {
+			padding: 8px 10px 8px 8px;
+			max-width: 200px;
+		}
+
+		p.info {
+			background-color: #bddefbdb;
+			border-left: solid 4px #068bffa1;
+		}
+
+		p.warn {
+			background-color: #fbecbddb;
+			border-left: solid 4px #ffbd06a1;
+		}
+
+		p.error {
+			background-color: #ffc4badb;
+			border-left: solid 4px #ff6208a1;
+		}
+	}
 }

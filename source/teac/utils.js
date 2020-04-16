@@ -42,8 +42,7 @@ function gotoPage(page) {
 
 const turnPrevPage = () => {
 	if (0 >= store.currentPage - 1) {
-		// TODO: 优化提示
-		alert("已到达第一页");
+		sendInform("已翻到第一页", "warn");
 	} else {
 		gotoPage(store.currentPage - 1);
 	}
@@ -51,8 +50,7 @@ const turnPrevPage = () => {
 
 const turnNextPage = () => {
 	if (store.pdfPageNum < store.currentPage + 1) {
-		// TODO: 优化提示
-		alert("已到达最后页");
+		sendInform("已翻到最后一页", "warn");
 	} else {
 		gotoPage(store.currentPage + 1);
 	}
@@ -60,11 +58,9 @@ const turnNextPage = () => {
 
 const turnToPage = (page) => {
 	if (isNaN(page)) {
-		// TODO 优化警告
-		alert("请输入数值");
+		sendInform("请输入数值", "warn");
 	} else if (store.pdfPageNum < page || 0 >= page) {
-		// TODO 优化警告
-		alert("页数超范围");
+		sendInform("页数超过范围", "warn");
 	} else {
 		gotoPage(page);
 	}
@@ -86,11 +82,33 @@ const sendText = (msg) => {
 	if (user.communication.ws) {
 		user.communication.sendMessage(msg);
 	} else {
-		// TODO 错误处理
-		console.log("已掉线，正在帮您重连");
+		sendInform("已掉线，正在帮您重连", "warn");
 		user.communication.connect();
 		setTimeout(() => sendText(msg), 2000);
 	}
+};
+
+const sendInform = (msg, type, time = 2000, pos = { top: "10%", left: "10%" }) => {
+	let p = document.createElement("p");
+	p.setAttribute("style", `top: ${pos.top}, left: ${pos.left}`);
+
+	switch (type) {
+		case "warn":
+			p.setAttribute("class", "warn");
+			p.innerHTML = `<i class="mdui-icon material-icons">warning</i>  ${msg}`;
+			break;
+		case "error":
+			p.setAttribute("class", "error");
+			p.innerHTML = `<i class="mdui-icon material-icons">error</i>  ${msg}`;
+			break;
+		default:
+			p.setAttribute("class", "info");
+			p.innerHTML = `<i class="mdui-icon material-icons">notifications</i> ${msg}`;
+			break;
+	}
+	$("#notify-box")[0].append(p);
+
+	return setTimeout(() => $("#notify-box").children()[0].remove(), time);
 };
 
 // 将浏览器客户区坐标转换为 canvas 坐标

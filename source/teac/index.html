@@ -22,7 +22,7 @@
 
 	<main class="main">
 		<article>
-			<header id="courseName"></header>
+			<header id="course-name"></header>
 
 			<section>
 				<div>
@@ -89,7 +89,7 @@
 			<article id="function" class="mdui-container">
 				<div class="mdui-textfield mdui-textfield-floating-label">
 					<label class="mdui-textfield-label">课程名</label>
-					<input class="mdui-textfield-input" type="text" onchange="chengeCourse(event)" />
+					<input class="mdui-textfield-input" id="course-input" type="text" />
 				</div>
 
 				<section class="mdui-btn mdui-ripple mdui-color-deep-purple-a400">
@@ -113,6 +113,7 @@
 				</button>
 			</article>
 		</aside>
+		<div id="notify-box"> </div>
 	</main>
 
 	<script src="config.js"></script>

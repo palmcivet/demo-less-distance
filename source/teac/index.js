@@ -1,5 +1,5 @@
 $(() => {
-	user.username = localStorage.getItem("username");
+	user.username = localStorage.getItem("username") || "develop"; // DEV
 	user.permission = localStorage.getItem("permission") === "true" ? true : false;
 
 	const ws = {
@@ -9,7 +9,7 @@ $(() => {
 				name: user.username,
 				role: user.permission,
 			}),
-		socketOnClose: () => console.log("您已离开教室"),
+		socketOnClose: () => sendInform("您已离开教室", "info"),
 		socketOnMessage: (msg) => handler(msg),
 		socketOnError: (e) => {
 			console.log(e);
@@ -46,17 +46,18 @@ $(() => {
 						gotoPage(1);
 						// 设置监听器
 						config.paintNode.addEventListener("mousedown", (event) => {
-							if (store.type === 5) {
-								config.proxyNode.value = null;
-								$("#textarea-proxy").css({
-									left: event.clientX,
-									top: event.clientY,
-								});
-							}
 							store.mouseDown = windowToCanvas(
 								event.clientX,
 								event.clientY
 							);
+							if (store.type === 5) {
+								config.proxyNode.value = null;
+
+								$("#textarea-proxy").css({
+									left: store.mouseDown.x,
+									top: store.mouseDown.y,
+								});
+							}
 							store.dragging = true;
 							saveDrawingSurface();
 						});
@@ -86,8 +87,7 @@ $(() => {
 						});
 					},
 					() => {
-						// TODO: 优化提示
-						console.log("PDF 加载失败");
+						sendInform("PDF 加载失败", "error");
 					}
 				);
 			};
@@ -219,26 +219,45 @@ const recvNotify = (notify, mode) => {
 	}
 };
 
-const toggleCourse = (e) => {
-	// TODO 处理逻辑
-	sendText({
-		type: wsType.begin,
-		name: user.username,
-	});
+const changeCourse = (e) => {
+	$("#course-name").val(e.target.value);
+};
 
-	// 开始上课，同时打开录音
-	user.class.isInClass = !user.class.isInClass;
-	user.class.isRecord = !user.class.isRecord;
-	e.target.innerHTML = user.class.isInClass
-		? '<i class="mdui-icon material-icons">settings_power</i>结束课程'
-		: '<i class="mdui-icon material-icons">power_settings_new</i>开始课程';
+const toggleCourse = (e) => {
+	if (!user.class) {
+		let course = $("#course-name").val();
+		if (!course) {
+			sendInform("请填写课程名", "warn");
+			return;
+		} else {
+			sendText({
+				type: wsType.begin,
+				speaker: user.username,
+				course,
+			});
+
+			// 开始上课，同时打开录音
+			user.class.courseName = course;
+
+			user.class.isRecord = !user.class.isRecord;
+			e.target.innerHTML = user.class
+				? '<i class="mdui-icon material-icons">settings_power</i>结束课程'
+				: '<i class="mdui-icon material-icons">power_settings_new</i>开始课程';
+		}
+	} else {
+		sendInform("当前正在上课", "warn");
+	}
 };
 
 const toggleRecord = (e) => {
-	// TODO 处理逻辑
-	e.target.innerHTML = user.class.isInClass
-		? '<i class="mdui-icon material-icons">settings_voice</i>暂停录音'
-		: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
+	if (user.class) {
+		// TODO 处理逻辑
+		e.target.innerHTML = user.class.isRecord
+			? '<i class="mdui-icon material-icons">settings_voice</i>暂停录音'
+			: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
+	} else {
+		// 当前未上课
+	}
 };
 
 const handler = (msg) => {
@@ -268,7 +287,7 @@ const handler = (msg) => {
 			break;
 		case wsType.finish:
 			user.class = null;
-			// TODO 提示
+			// TODO 提示，显示报告
 			break;
 		case wsType.slide:
 			break;

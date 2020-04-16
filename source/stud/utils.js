@@ -3,7 +3,7 @@ const sendText = (msg) => {
 	if (user.communication.ws) {
 		user.communication.sendMessage(msg);
 	} else {
-		// TODO 错误处理
+		// TODO 优化警告
 		console.log("offline");
 		user.communication.connect();
 	}
