@@ -24,12 +24,13 @@ const lineStyle = [
 
 const user = {
 	class: {
+		isInClass: false, // 是否正在上课
 		isRecord: false, // 是否正在录音
 		speaker: "",
 		courseName: "", // 课程名
-		onlineCount: 0,
 		startTime: "",
 	},
+	online: 0,
 	communication: null, // WS 连接
 	username: "", // 用户名
 	permission: false, // 身份

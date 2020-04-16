@@ -91,6 +91,10 @@ $(() => {
 					}
 				);
 			};
+			// 更改缺省课程名
+			if (!$("#course-input").val()) {
+				$("#course-input").val($("#load")[0].files[0].name);
+			}
 		});
 
 		// 生成工具栏
@@ -220,14 +224,27 @@ const recvNotify = (notify, mode) => {
 };
 
 const changeCourse = (e) => {
-	$("#course-name").val(e.target.value);
+	if ($("#course-input")[0].disabled) {
+		$("#course-input")[0].disabled = false;
+		e.target.innerHTML = '<i class="mdui-icon material-icons">spellcheck</i>';
+		e.target.title = "完成";
+	} else {
+		$("#course-input")[0].disabled = true;
+		e.target.innerHTML = '<i class="mdui-icon material-icons">mode_edit</i>';
+		e.target.title = "更改";
+		sendInform("课程名已更改", "info");
+	}
 };
 
 const toggleCourse = (e) => {
-	if (!user.class) {
-		let course = $("#course-name").val();
+	if (!user.class.isInClass) {
+		let course = $("#course-input").val();
 		if (!course) {
 			sendInform("请填写课程名", "warn");
+			$("#course-input").focus();
+			return;
+		} else if (!store.pdfContent) {
+			sendInform("请选取一份演示文稿", "warn");
 			return;
 		} else {
 			sendText({
@@ -235,28 +252,39 @@ const toggleCourse = (e) => {
 				speaker: user.username,
 				course,
 			});
-
 			// 开始上课，同时打开录音
-			user.class.courseName = course;
-
+			// startTime 字段在收到 begin 消息填写，使用服务器时间
+			user.class.isInClass = !user.class.isInClass;
 			user.class.isRecord = !user.class.isRecord;
-			e.target.innerHTML = user.class
-				? '<i class="mdui-icon material-icons">settings_power</i>结束课程'
-				: '<i class="mdui-icon material-icons">power_settings_new</i>开始课程';
+			user.class.speaker = user.username;
+			user.class.courseName = course;
 		}
 	} else {
-		sendInform("当前正在上课", "warn");
+		sendText({
+			type: wsType.finish,
+			speaker: user.username,
+		});
+		sendInform(user.class.courseName + "结束", "info");
+		user.class.isInClass = false;
+		user.class.isRecord = false;
 	}
+	$("#toggleCourse")[0].innerHTML = user.class.isInClass
+		? '<i class="mdui-icon material-icons">settings_power</i>结束课程'
+		: '<i class="mdui-icon material-icons">power_settings_new</i>开始课程';
+	$("#toggleRecord")[0].innerHTML = user.class.isRecord
+		? '<i class="mdui-icon material-icons">settings_voice</i>暂停录音'
+		: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
 };
 
 const toggleRecord = (e) => {
-	if (user.class) {
-		// TODO 处理逻辑
-		e.target.innerHTML = user.class.isRecord
+	if (user.class.isInClass) {
+		// TODO WebRTC
+		user.class.isRecord = !user.class.isRecord;
+		$("#toggleRecord")[0].innerHTML = user.class.isRecord
 			? '<i class="mdui-icon material-icons">settings_voice</i>暂停录音'
 			: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
 	} else {
-		// 当前未上课
+		sendInform("当前未上课", "info");
 	}
 };
 
@@ -270,31 +298,36 @@ const handler = (msg) => {
 			if (message.class) {
 				user.class.speaker = message.class.speaker;
 				user.class.courseName = message.class.course;
-				user.class.onlineCount = message.class.count;
 				user.class.startTime = message.class.beginning;
+				user.online = message.online;
 			}
 			break;
 		case wsType.leave:
 			recvNotify(message, false);
-			user.class.onlineCount--;
+			user.online--;
 			break;
 		case wsType.chat:
 			recvText(message);
 			break;
 		case wsType.begin:
-			user.class.speaker = message.class.speaker;
-			user.class.courseName = message.class.course;
+			user.class.speaker = message.speaker;
+			user.class.courseName = message.course;
+			user.class.startTime = message.beginning;
 			break;
 		case wsType.finish:
-			user.class = null;
-			// TODO 提示，显示报告
+			user.class.isInClass = false;
+			user.class.isRecord = false;
+			user.class.speaker = "";
+			user.class.courseName = "";
+			user.class.startTime = "";
+			// TODO 生成报告
 			break;
 		case wsType.slide:
 			break;
 		case wsType.note:
 			break;
 		default:
-			console.log(msg);
+			console.log("未捕获：" + mmsg);
 			break;
 	}
 };

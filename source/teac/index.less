@@ -214,13 +214,27 @@ main.main > aside {
 	}
 
 	article#function {
-		& > div:first-child {
-			& > input {
-				text-align: center;
+		& > section:first-child {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-end;
 
-				&:focus {
-					cursor: text;
+			& > div:first-child {
+				width: 100%;
+
+				& > input {
+					text-align: center;
+
+					&:focus {
+						cursor: text;
+					}
 				}
+			}
+
+			& > button {
+				min-width: unset;
+				padding: 5px;
+				margin-bottom: 8px;
 			}
 		}
 
