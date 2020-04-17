@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-	<title>教师端</title>
+	<title>无距离远程课堂 教师端</title>
 	<link rel="stylesheet/less" type="text/css" href="index.less" />
 
 	<!-- DEV -->
@@ -24,6 +24,9 @@
 		<article>
 			<section>
 				<div>
+					<div id="present">
+
+					</div>
 					<canvas id="canvas-paint" width="960px" height="540px"></canvas>
 					<textarea id="textarea-proxy"></textarea>
 					<canvas id="canvas-node" width="960px" height="540px"></canvas>
@@ -102,18 +105,25 @@
 					<input id="load" type="file" accept=".pdf" />
 				</section>
 
-				<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="toggleCourse()" id="toggleCourse">
-					<i class="mdui-icon material-icons">power_settings_new</i> 开始课程
-				</button>
-				<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="toggleRecord()" id="toggleRecord">
-					<i class="mdui-icon material-icons">keyboard_voice</i> 开始录音
-				</button>
-				<button class="mdui-btn mdui-ripple mdui-col-xs-6">
-					<i class="mdui-icon material-icons">cloud_upload</i> 上传课件
-				</button>
-				<button class="mdui-btn mdui-ripple mdui-col-xs-6">
-					<i class="mdui-icon material-icons">cloud_download</i> 下载批注
-				</button>
+				<section id="clock">
+					<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未上课</p>
+					<span>00</span> : <span>00</span> : <span>00</span>
+				</section>
+
+				<section>
+					<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="toggleCourse()" id="toggleCourse">
+						<i class="mdui-icon material-icons">power_settings_new</i> 开始课程
+					</button>
+					<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="toggleRecord()" id="toggleRecord">
+						<i class="mdui-icon material-icons">keyboard_voice</i> 开始录音
+					</button>
+					<button class="mdui-btn mdui-ripple mdui-col-xs-6">
+						<i class="mdui-icon material-icons">cloud_upload</i> 上传课件
+					</button>
+					<button class="mdui-btn mdui-ripple mdui-col-xs-6">
+						<i class="mdui-icon material-icons">cloud_download</i> 下载批注
+					</button>
+				</section>
 			</article>
 		</aside>
 		<div id="notify-box"> </div>

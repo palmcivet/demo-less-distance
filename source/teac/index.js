@@ -1,5 +1,5 @@
 $(() => {
-	user.username = localStorage.getItem("username") || "develop"; // DEV
+	user.username = localStorage.getItem("username") || "developer"; // DEV
 	user.permission = localStorage.getItem("permission") === "true" ? true : false;
 
 	const ws = {
@@ -93,7 +93,7 @@ $(() => {
 			};
 			// 更改缺省课程名
 			if (!$("#course-input").val()) {
-				$("#course-input").val($("#load")[0].files[0].name);
+				$("#course-input").val($("#load")[0].files[0].name.slice(0, -4));
 			}
 		});
 
@@ -269,10 +269,10 @@ const toggleCourse = (e) => {
 		user.class.isRecord = false;
 	}
 	$("#toggleCourse")[0].innerHTML = user.class.isInClass
-		? '<i class="mdui-icon material-icons">settings_power</i>结束课程'
+		? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_power</i>结束课程'
 		: '<i class="mdui-icon material-icons">power_settings_new</i>开始课程';
 	$("#toggleRecord")[0].innerHTML = user.class.isRecord
-		? '<i class="mdui-icon material-icons">settings_voice</i>暂停录音'
+		? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_voice</i>暂停录音'
 		: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
 };
 
@@ -282,7 +282,7 @@ const toggleRecord = (e) => {
 		user.class.isRecord = !user.class.isRecord;
 		$("#toggleRecord")[0].innerHTML = user.class.isRecord
 			? '<i class="mdui-icon material-icons">settings_voice</i>暂停录音'
-			: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
+			: '<i class="mdui-icon material-icons mdui-text-color-red-a400">keyboard_voice</i>继续录音';
 	} else {
 		sendInform("当前未上课", "info");
 	}
@@ -310,17 +310,40 @@ const handler = (msg) => {
 			recvText(message);
 			break;
 		case wsType.begin:
+			$(
+				"#clock"
+			).children()[0].innerHTML = `<i class="mdui-icon material-icons">access_alarm</i> 已上课时间`;
 			user.class.speaker = message.speaker;
 			user.class.courseName = message.course;
 			user.class.startTime = message.beginning;
+			user.class.clockID = setInterval(() => {
+				let time = ++user.class.clock;
+				let clock = $("#clock").children();
+				clock[1].innerText = ("0" + Math.floor(time / 3600).toString()).slice(-2);
+				clock[2].innerText = ("0" + Math.floor(time / 60).toString()).slice(-2);
+				clock[3].innerText = ("0" + Math.floor(time % 60).toString()).slice(-2);
+			}, 1000);
 			break;
 		case wsType.finish:
+			$("#clock").empty();
+			$("#clock").append(
+				`<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未上课</p>
+				<span>00</span> : <span>00</span> : <span>00</span>`
+			);
+			clearInterval(user.class.clockID);
+			// TODO 生成报告
+			// DEV 测试时延
+			$("#clock")
+				.children()
+				.map((i) => console.log($("#clock").children()[i].innerText));
+			// 收尾
 			user.class.isInClass = false;
 			user.class.isRecord = false;
 			user.class.speaker = "";
 			user.class.courseName = "";
 			user.class.startTime = "";
-			// TODO 生成报告
+			user.class.clockID = null;
+			user.class.clock = 0;
 			break;
 		case wsType.slide:
 			break;

@@ -28,7 +28,9 @@ const user = {
 		isRecord: false, // 是否正在录音
 		speaker: "",
 		courseName: "", // 课程名
-		startTime: "",
+		startTime: "", // 开始时间
+		clockID: null, //计时器
+		clock: 0, //计时器
 	},
 	online: 0,
 	communication: null, // WS 连接
