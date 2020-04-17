@@ -3,12 +3,7 @@ $(() => {
 	user.permission = localStorage.getItem("permission") === "true" ? true : false;
 
 	const ws = {
-		socketOnOpen: () =>
-			sendText({
-				type: wsType.enter,
-				name: user.username,
-				role: user.permission,
-			}),
+		socketOnOpen: () => {},
 		socketOnClose: () => sendInform("您已离开教室", "info"),
 		socketOnMessage: (msg) => handler(msg),
 		socketOnError: (e) => {
@@ -21,7 +16,7 @@ $(() => {
 	user.communication.connect();
 
 	if (null === (config.canvasNode = $("#canvas-node")[0])) {
-		alert("您的浏览器不支持 Canvas");
+		sendInform("您的浏览器不支持 Canvas，请使用 Firefox 或 Chrome", "warn");
 		return;
 	} else {
 		// 初始化节点
@@ -264,7 +259,7 @@ const toggleCourse = (e) => {
 			type: wsType.finish,
 			speaker: user.username,
 		});
-		sendInform(user.class.courseName + "结束", "info");
+		sendInform(user.class.courseName + " 结束", "info");
 		user.class.isInClass = false;
 		user.class.isRecord = false;
 	}
@@ -290,6 +285,7 @@ const toggleRecord = (e) => {
 
 const handler = (msg) => {
 	message = JSON.parse(msg.data);
+	// DEV
 	console.log(message);
 
 	switch (message.type) {
@@ -310,6 +306,7 @@ const handler = (msg) => {
 			recvText(message);
 			break;
 		case wsType.begin:
+			$("#present").hide();
 			$(
 				"#clock"
 			).children()[0].innerHTML = `<i class="mdui-icon material-icons">access_alarm</i> 已上课时间`;
@@ -325,17 +322,24 @@ const handler = (msg) => {
 			}, 1000);
 			break;
 		case wsType.finish:
-			$("#clock").empty();
-			$("#clock").append(
-				`<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未上课</p>
-				<span>00</span> : <span>00</span> : <span>00</span>`
-			);
 			clearInterval(user.class.clockID);
-			// TODO 生成报告
 			// DEV 测试时延
-			$("#clock")
+			let $clock = $("#clock");
+			$clock
 				.children()
 				.map((i) => console.log($("#clock").children()[i].innerText));
+			$clock.empty();
+			$clock.append(
+				`<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未上课</p>
+					<span>00</span> : <span>00</span> : <span>00</span>`
+			);
+			// 生成报告
+			$("#present").show();
+			$("#present").children()[0].innerHTML = `<h1>${user.class.courseName}</h1>
+				<span class="k">授课人</span><span class="v">${message.speaker}</span>
+				<span class="k">开始于</span><span class="v">${message.beginning}</span>
+				<span class="k">课程时长</span><span class="v">${message.duration}</span>`;
+
 			// 收尾
 			user.class.isInClass = false;
 			user.class.isRecord = false;
@@ -350,6 +354,7 @@ const handler = (msg) => {
 		case wsType.note:
 			break;
 		default:
+			// DEV
 			console.log("未捕获：" + mmsg);
 			break;
 	}
