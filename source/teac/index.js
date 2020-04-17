@@ -76,6 +76,7 @@ $(() => {
 						});
 						config.paintNode.addEventListener("mouseup", (event) => {
 							store.dragging = false;
+							store.isModified = true;
 							if (store.type === 5) {
 								config.proxyNode.focus();
 							}
@@ -86,6 +87,7 @@ $(() => {
 					}
 				);
 			};
+			$("#present").hide();
 			// 更改缺省课程名
 			if (!$("#course-input").val()) {
 				$("#course-input").val($("#load")[0].files[0].name.slice(0, -4));
@@ -141,7 +143,7 @@ $(() => {
 // 跳转到
 const jumpTo = (e) => {
 	if (e.keyCode === 13) {
-		turnToPage(parseInt(e.target.value));
+		turnPage(parseInt(e.target.value));
 	}
 };
 
@@ -223,6 +225,7 @@ const changeCourse = (e) => {
 		$("#course-input")[0].disabled = false;
 		e.target.innerHTML = '<i class="mdui-icon material-icons">spellcheck</i>';
 		e.target.title = "完成";
+		$("#course-input").focus();
 	} else {
 		$("#course-input")[0].disabled = true;
 		e.target.innerHTML = '<i class="mdui-icon material-icons">mode_edit</i>';
@@ -233,19 +236,22 @@ const changeCourse = (e) => {
 
 const toggleCourse = (e) => {
 	if (!user.class.isInClass) {
+		$("#present").hide();
 		let course = $("#course-input").val();
 		if (!course) {
 			sendInform("请填写课程名", "warn");
 			$("#course-input").focus();
 			return;
 		} else if (!store.pdfContent) {
-			sendInform("请选取一份演示文稿", "warn");
+			sendInform("请加载一份演示文稿", "warn");
 			return;
 		} else {
 			sendText({
 				type: wsType.begin,
 				speaker: user.username,
 				course,
+				slide: config.canvasNode.toDataURL("image/png"),
+				note: config.paintNode.toDataURL("image/png"),
 			});
 			// 开始上课，同时打开录音
 			// startTime 字段在收到 begin 消息填写，使用服务器时间
@@ -259,7 +265,6 @@ const toggleCourse = (e) => {
 			type: wsType.finish,
 			speaker: user.username,
 		});
-		sendInform(user.class.courseName + " 结束", "info");
 		user.class.isInClass = false;
 		user.class.isRecord = false;
 	}
@@ -276,26 +281,31 @@ const toggleRecord = (e) => {
 		// TODO WebRTC
 		user.class.isRecord = !user.class.isRecord;
 		$("#toggleRecord")[0].innerHTML = user.class.isRecord
-			? '<i class="mdui-icon material-icons">settings_voice</i>暂停录音'
-			: '<i class="mdui-icon material-icons mdui-text-color-red-a400">keyboard_voice</i>继续录音';
+			? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_voice</i>暂停录音'
+			: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
 	} else {
-		sendInform("当前未上课", "info");
+		sendInform("当前未开课", "info");
 	}
 };
 
 const handler = (msg) => {
 	message = JSON.parse(msg.data);
 	// DEV
-	console.log(message);
+	console.log("recv", message);
 
 	switch (message.type) {
 		case wsType.enter:
 			recvNotify(message, true);
 			if (message.class) {
-				user.class.speaker = message.class.speaker;
-				user.class.courseName = message.class.course;
-				user.class.startTime = message.class.beginning;
-				user.online = message.online;
+				if (message.class.speaker === user.username) {
+					user.class.speaker = message.class.speaker;
+					user.class.courseName = message.class.course;
+					user.class.startTime = message.class.beginning;
+					user.online = message.online;
+					sendInform("重连成功", "info");
+				} else {
+					window.location = "/stud/index.html";
+				}
 			}
 			break;
 		case wsType.leave:
@@ -306,10 +316,9 @@ const handler = (msg) => {
 			recvText(message);
 			break;
 		case wsType.begin:
-			$("#present").hide();
 			$(
 				"#clock"
-			).children()[0].innerHTML = `<i class="mdui-icon material-icons">access_alarm</i> 已上课时间`;
+			).children()[0].innerHTML = `<i class="mdui-icon material-icons">access_alarm</i> 课程已进行`;
 			user.class.speaker = message.speaker;
 			user.class.courseName = message.course;
 			user.class.startTime = message.beginning;
@@ -323,14 +332,16 @@ const handler = (msg) => {
 			break;
 		case wsType.finish:
 			clearInterval(user.class.clockID);
+			sendInform("《" + user.class.courseName + "》" + " 结束", "info");
 			// DEV 测试时延
 			let $clock = $("#clock");
 			$clock
 				.children()
 				.map((i) => console.log($("#clock").children()[i].innerText));
+
 			$clock.empty();
 			$clock.append(
-				`<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未上课</p>
+				`<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未开课</p>
 					<span>00</span> : <span>00</span> : <span>00</span>`
 			);
 			// 生成报告
@@ -349,13 +360,9 @@ const handler = (msg) => {
 			user.class.clockID = null;
 			user.class.clock = 0;
 			break;
-		case wsType.slide:
-			break;
-		case wsType.note:
-			break;
 		default:
 			// DEV
-			console.log("未捕获：" + mmsg);
+			console.log("未捕获：" + message);
 			break;
 	}
 };

@@ -1,6 +1,9 @@
 function gotoPage(page) {
-	// 保存笔记
-	store.pdfStorage[store.currentPage] = config.paintNode.toDataURL("image/png", 1);
+	// 保存笔记，先看改没改，再看有没有
+	if (store.isModified) {
+		store.pdfStorage[store.currentPage] = config.paintNode.toDataURL("image/jpeg", 1);
+		store.isModified = false;
+	}
 
 	// 切换页面
 	store.currentPage = page;
@@ -32,39 +35,67 @@ function gotoPage(page) {
 		}
 	});
 
-	// 加载笔记
+	// 加载笔记，先看有没有
 	config.paintCtx.clearRect(0, 0, config.paintNode.width, config.paintNode.width);
 	if (undefined !== (img = store.pdfStorage[page])) {
+		if (user.class.isInClass) {
+			asyncSlide();
+			asyncNote(img);
+		}
 		config.imageNode.src = img;
 		$("#img-proxy").ready(() => config.paintCtx.drawImage(config.imageNode, 0, 0));
 	}
 }
 
-const turnPrevPage = () => {
-	if (0 >= store.currentPage - 1) {
-		sendInform("已翻到第一页", "warn");
+/**
+ *
+ * @param {Boolean|Number} page - true|false|页数，前后翻页和跳转页
+ */
+const turnPage = (page) => {
+	if (store.pdfContent) {
+		switch (page) {
+			case true:
+				if (store.pdfPageNum < store.currentPage + 1) {
+					sendInform("已翻到最后一页", "warn");
+				} else {
+					gotoPage(store.currentPage + 1);
+				}
+				break;
+			case false:
+				if (0 >= store.currentPage - 1) {
+					sendInform("已翻到第一页", "warn");
+				} else {
+					gotoPage(store.currentPage - 1);
+				}
+				break;
+			default:
+				if (isNaN(page)) {
+					sendInform("请输入数值", "warn");
+				} else if (store.pdfPageNum < page || 0 >= page) {
+					sendInform("页数超过范围", "warn");
+				} else {
+					gotoPage(page);
+				}
+				config.jumpNode.value = "";
+				break;
+		}
 	} else {
-		gotoPage(store.currentPage - 1);
+		sendInform("请加载一份演示文稿", "info");
 	}
 };
 
-const turnNextPage = () => {
-	if (store.pdfPageNum < store.currentPage + 1) {
-		sendInform("已翻到最后一页", "warn");
-	} else {
-		gotoPage(store.currentPage + 1);
-	}
+const asyncSlide = (data = null) => {
+	sendText({
+		type: wsType.slide,
+		data: data || config.canvasNode.toDataURL("image/png", 1),
+	});
 };
 
-const turnToPage = (page) => {
-	if (isNaN(page)) {
-		sendInform("请输入数值", "warn");
-	} else if (store.pdfPageNum < page || 0 >= page) {
-		sendInform("页数超过范围", "warn");
-	} else {
-		gotoPage(page);
-	}
-	config.jumpNode.value = "";
+const asyncNote = (data = null) => {
+	sendText({
+		type: wsType.slide,
+		note: data || config.paintNode.toDataURL("image/png", 1),
+	});
 };
 
 // 上传课件
@@ -80,9 +111,10 @@ const uploadPdf = () => {
 // 发送 WS 信息
 const sendText = (msg) => {
 	if (user.communication.ws) {
+		console.log(msg);
 		user.communication.sendMessage(msg);
 	} else {
-		sendInform("已掉线，正在帮您重连", "warn");
+		sendInform("已掉线，正在帮您重连", "error");
 		user.communication.connect();
 		setTimeout(() => sendText(msg), 2000);
 	}
@@ -121,19 +153,17 @@ const windowToCanvas = (clientX, clientY) => {
 };
 
 // 保存 canvas 绘图表面
-const saveDrawingSurface = () => {
-	store.drawingSurface = config.paintCtx.getImageData(
+const saveDrawingSurface = () =>
+	(store.drawingSurface = config.paintCtx.getImageData(
 		0,
 		0,
 		config.paintNode.width,
 		config.paintNode.height
-	);
-};
+	));
 
 // 恢复 canvas 绘图表面
-const restoreDrawingSurface = () => {
+const restoreDrawingSurface = () =>
 	config.paintCtx.putImageData(store.drawingSurface, 0, 0);
-};
 
 // 生成图标
 const genIcon = (classId, isSelected = false) => {

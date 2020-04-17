@@ -8,9 +8,10 @@
 
 	<!-- DEV -->
 	<script src="../../lib/less.min.js"></script>
+	<script src="../../lib/mdui.min.js"></script>
 	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
 	<link rel="stylesheet" href="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/css/mdui.min.css">
-	<script src="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/js/mdui.min.js"></script>
+	<!-- <script src="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/js/mdui.min.js"></script> -->
 </head>
 
 <body>
@@ -26,7 +27,7 @@
 				<div>
 					<header id="present">
 						<div>
-							<h1>当前没有开课</h1>
+							<h1>当前您还未开课</h1>
 						</div>
 					</header>
 					<canvas id="canvas-paint" width="960px" height="540px"></canvas>
@@ -43,13 +44,13 @@
 			</section>
 
 			<footer>
-				<button title="首页" onclick="turnToPage(1)"><i class="mdui-icon material-icons">first_page</i></button>
-				<button title="上一页" onclick="turnPrevPage()"><i
+				<button title="首页" onclick="turnPage(1)"><i class="mdui-icon material-icons">first_page</i></button>
+				<button title="上一页" onclick="turnPage(false)"><i
 						class="mdui-icon material-icons">navigate_before</i></button>
 				<input title="Enter 跳转" onkeydown="jumpTo(event)" id="jump" placeholder="跳转"></input>
-				<button title="下一页" onclick="turnNextPage()"><i
+				<button title="下一页" onclick="turnPage(true)"><i
 						class="mdui-icon material-icons">navigate_next</i></button>
-				<button title="末页" onclick="turnToPage(store.pdfPageNum)"><i
+				<button title="末页" onclick="turnPage(store.pdfPageNum)"><i
 						class="mdui-icon material-icons">last_page</i></button>
 			</footer>
 		</article>
@@ -96,7 +97,7 @@
 						<input class="mdui-textfield-input" id="course-input" type="text" />
 					</div>
 					<button class="mdui-btn mdui-ripple" title="完成" onclick="changeCourse(event)">
-						<i class="mdui-icon material-icons">check</i>
+						<i class="mdui-icon material-icons">spellcheck</i>
 					</button>
 				</section>
 
@@ -108,7 +109,7 @@
 				</section>
 
 				<section id="clock">
-					<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未上课</p>
+					<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未开课</p>
 					<span>00</span> : <span>00</span> : <span>00</span>
 				</section>
 

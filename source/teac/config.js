@@ -55,9 +55,10 @@ const store = {
 	pdfContent: null, // `getDocument()` 返回的值
 	pdfPageNum: 0, // PDF 页数
 	pdfStorage: [], // 保存每一页标注
-	currentPage: 0, // 当前页
+	currentPage: 1, // 当前页
 	currentScale: null, // 缩放比例
 	// 绘图
+	isModified: false, // 是否修改过，该字段为节省存储
 	drawingStack: [], // 历史记录栈
 	drawingSurface: null, // 保存绘图表面
 	mouseDown: null, // 保存鼠标按下时的 canvas 坐标
