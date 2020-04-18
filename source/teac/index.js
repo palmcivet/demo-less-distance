@@ -24,6 +24,7 @@ $(() => {
 		config.paintNode = $("#canvas-paint")[0];
 		config.paintCtx = config.paintNode.getContext("2d");
 		config.paintNode.fillStyle = "rgba(255, 255, 255, 0)";
+		store.drawingRing = new canvasRing(config.canvasNode);
 
 		// 加载 PDF 的监听及回调
 		pdfjsLib.workerSrc = config.libSrc;
@@ -53,6 +54,7 @@ $(() => {
 									top: store.mouseDown.y,
 								});
 							}
+							store.isModified = true;
 							store.dragging = true;
 							saveDrawingSurface();
 						});
@@ -69,14 +71,14 @@ $(() => {
 								} else if (store.dragging && store.type !== 0) {
 									event.target.style["cursor"] = "crosshair";
 									restoreDrawingSurface();
-									let toolId = lineStyle[store.type];
-									toolBox[toolId](mouseMove);
+									toolBox[lineStyle[store.type]](mouseMove);
 								}
 							}
 						});
 						config.paintNode.addEventListener("mouseup", (event) => {
+							let mouseUp = windowToCanvas(event.clientX, event.clientY);
+							store.drawingRing.do(toolBox[lineStyle[store.type]], mouseUp);
 							store.dragging = false;
-							store.isModified = true;
 							if (store.type === 5) {
 								config.proxyNode.focus();
 							}
@@ -110,13 +112,22 @@ $(() => {
 		});
 		config.proxyNode.addEventListener("input", (e) => {
 			if (e.target.inputStatus !== "CHINESE_TYPING") {
-				toolBox[lineStyle[5]](store.mouseDown, e.target.value);
+				// toolBox[lineStyle[5]](store.mouseDown, e.target.value);
+				store.drawingRing.do(
+					toolBox[lineStyle[5]],
+					store.mouseDown,
+					e.target.value
+				);
 			}
 		});
 		config.proxyNode.addEventListener("compositionend", (e) => {
 			setTimeout(() => {
 				e.target.inputStatus = "CHINESE_TYPE_END";
-				toolBox[lineStyle[5]](store.mouseDown, e.target.value);
+				store.drawingRing.do(
+					toolBox[lineStyle[5]],
+					store.mouseDown,
+					e.target.value
+				);
 			}, 100);
 		});
 

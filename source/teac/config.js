@@ -16,10 +16,8 @@ const lineStyle = [
 	"triangle",
 	"circle",
 	"text",
-	// "pen",
+	// "pencil",
 	// "eraser",
-	// "undo",
-	// "redo",
 ];
 
 const user = {
@@ -59,11 +57,11 @@ const store = {
 	currentScale: null, // 缩放比例
 	// 绘图
 	isModified: false, // 是否修改过，该字段为节省存储
-	drawingStack: [], // 历史记录栈
+	drawingRing: null, // 历史记录栈
 	drawingSurface: null, // 保存绘图表面
 	mouseDown: null, // 保存鼠标按下时的 canvas 坐标
 	dragging: false, // 标识鼠标是否处于拖拽状态
 	color: "red", //笔触颜色
-	size: 14, // 笔触粗细
+	size: 1, // 笔触粗细
 	type: 0, //笔触类型
 };

@@ -4,6 +4,15 @@ function gotoPage(page) {
 		store.pdfStorage[store.currentPage] = config.paintNode.toDataURL("image/png", 1);
 		store.isModified = false;
 	}
+	store.drawingRing.clear();
+	store.drawingRing.init(
+		config.paintCtx.getImageData(
+			0,
+			0,
+			config.paintNode.width,
+			config.paintNode.height
+		)
+	);
 
 	// 切换页面
 	store.currentPage = page;
@@ -189,12 +198,60 @@ const changeColor = (color) => {
 	// TODO 同步信息
 };
 
+class canvasRing {
+	constructor(canvasNode, ringSize = 30) {
+		this.width = canvasNode.width;
+		this.height = canvasNode.height;
+		this.ring = [];
+		this.ringSize = ringSize;
+		this.ringSeak = -1; // 指示当前记录，先加再求值
+		this.ringGap = -1; // 指示最新记录
+	}
+
+	init(data) {
+		this.ring[(this.ringSeak = 0)] = data;
+	}
+
+	clear() {
+		this.ring = [];
+		this.ringGap = this.ringSeak = -1;
+	}
+
+	do(callback, ...params) {
+		this.ring[++this.ringSeak] = config.paintCtx.getImageData(
+			0,
+			0,
+			this.width,
+			this.height
+		);
+		callback(...params);
+		this.ringGap = this.ringSeak;
+		if (this.ringSeak > this.ringSize) {
+			this.ring = this.ring.slice(-this.ringSize);
+		}
+	}
+
+	undo() {
+		if (this.ringSeak > 0) {
+			console.log(this.ringSeak, this.ringGap);
+			config.paintCtx.putImageData(this.ring[--this.ringSeak], 0, 0);
+		}
+	}
+
+	redo() {
+		if (this.ringSeak < this.ringGap) {
+			config.paintCtx.putImageData(this.ring[++this.ringSeak], 0, 0);
+		}
+	}
+}
+
 const toolBox = {
 	line: (mouseMove) => {
 		config.paintCtx.beginPath(); // 清除当前路径
 		config.paintCtx.moveTo(store.mouseDown.x, store.mouseDown.y);
 		config.paintCtx.lineTo(mouseMove.x, mouseMove.y);
 		config.paintCtx.strokeStyle = store.color;
+		config.paintCtx.lineWidth = store.size;
 		config.paintCtx.stroke();
 	},
 	rectangle: (mouseMove) => toolBox.polygon(mouseMove, 4),
@@ -215,10 +272,11 @@ const toolBox = {
 			true
 		);
 		config.paintCtx.strokeStyle = store.color;
+		config.paintCtx.lineWidth = store.size;
 		config.paintCtx.stroke();
 	},
 	text: (mouseMove, text) => {
-		config.paintCtx.font = "16px 'SFPing Fang', sans-serif";
+		config.paintCtx.font = `${store.size}px 'SFPing Fang', sans-serif`;
 		config.paintCtx.fillStyle = store.color;
 		config.paintCtx.fillText(text, mouseMove.x, mouseMove.y);
 	},
@@ -245,6 +303,7 @@ const toolBox = {
 		}
 		config.paintCtx.closePath();
 		config.paintCtx.strokeStyle = store.color;
+		config.paintCtx.lineWidth = store.size;
 		config.paintCtx.stroke();
 	},
 };
