@@ -1,43 +1,21 @@
+const config = {
+	canvasNode: null, // canvas 节点，通过 ID 获取
+	canvasCtx: null, // canvas 的 context
+	paintNode: null, // paint 节点，通过 ID 获取
+	paintCtx: null, // paint 的 context
+	imageNode: $("#img-proxy")[0], // 标注的 img 代理
+	editorNode: null, // 笔记节点
+};
+
 $(() => {
-	user.username = localStorage.getItem("username") || "Developer-Stu"; // DEV
-	user.permission = localStorage.getItem("permission") === "true" ? true : false;
-
-	const ws = {
-		socketOnOpen: () => {},
-		socketOnClose: () => sendInform("您已离开教室", "info"),
-		socketOnMessage: (msg) => handler(msg),
-		socketOnError: (e) => {
-			console.log(e);
-		},
-		socketUrl: "wss://www.uiofield.top/lessDistance/websocket",
-	};
-
-	user.communication = new Socket(ws);
-	user.communication.connect();
-
 	if (null === (config.canvasNode = $("#canvas-node")[0])) {
 		alert("您的浏览器不支持 Canvas");
 		return;
 	} else {
-		// 初始化节点
-		config.canvasCtx = config.canvasNode.getContext("2d");
-		config.paintNode = $("#canvas-paint")[0];
-		config.paintCtx = config.paintNode.getContext("2d");
-		config.paintNode.fillStyle = "rgba(255, 255, 255, 0)";
+		initNode(); // 初始化节点
+		listenChatBox(); // 监听聊天框发送方式的切换
 
-		$("#chat-box textarea")[0].addEventListener("keydown", (e) => {
-			if (e.keyCode === 13) {
-				if (e.shiftKey && e.target.placeholder === "Shift + Enter 发送") {
-					e.preventDefault();
-					textSubmit();
-				} else if (!e.shiftKey && e.target.placeholder === "Enter 发送") {
-					e.preventDefault();
-					textSubmit();
-				}
-			}
-		});
-
-		// 富文本编辑器
+		// 初始化富文本编辑器
 		let E = window.wangEditor;
 		let editor;
 		config.editorNode = editor = new E("#editor");
@@ -67,75 +45,6 @@ $(() => {
 	}
 });
 
-// 切换发送快捷键
-function toggleEnter() {
-	let $input = $("#chat-box div label input");
-	let $textarea = $("#chat-box textarea")[0];
-	if ($input.val() === "true") {
-		$textarea.placeholder = "Shift + Enter 发送";
-		$input.val("false");
-	} else {
-		$textarea.placeholder = "Enter 发送";
-		$input.val("true");
-	}
-}
-
-// 提交聊天信息
-function textSubmit() {
-	let msg = $("#chat-box textarea").val();
-
-	if (msg !== "" && msg !== "\n") {
-		sendText({
-			type: "chat",
-			name: user.username,
-			role: user.permission,
-			msg,
-		});
-	}
-	$("#chat-box textarea").val("");
-}
-
-// 处理聊天消息
-function recvText(msg) {
-	let div = document.createElement("div");
-	if (msg.name === user.username) {
-		div.setAttribute("class", "self");
-	} else {
-		if (msg.role) {
-			div.setAttribute("class", "teac");
-		} else {
-			div.setAttribute("class", "stud");
-		}
-	}
-	div.innerHTML = `<span>${msg.name}</span><span>${new Date()
-		.toTimeString()
-		.slice(0, 8)}</span>`;
-	let p = document.createElement("p");
-	p.innerText = msg.msg.replace(/"\n"/g, "<br>");
-	div.appendChild(p);
-	$("#chat-message").append(div);
-	$("#chat-message")[0].scrollTop = $("#chat-message")[0].scrollHeight;
-}
-
-// 处理聊天通知
-const recvNotify = (notify, mode) => {
-	if (notify.type == wsType.enter) {
-		let div = document.createElement("div");
-
-		if (notify.role) {
-			div.setAttribute("class", "notify t");
-		} else {
-			div.setAttribute("class", "notify s");
-		}
-
-		div.innerHTML = `<span>${
-			notify.name.length > 16 ? notify.name.slice(16) + "..." : notify.name
-		}</span><span> ${mode ? "进入教室" : "已离开教室"}</span>`;
-		$("#chat-message").append(div);
-		$("#chat-message")[0].scrollTop = $("#chat-message")[0].scrollHeight;
-	}
-};
-
 const handler = (msg) => {
 	message = JSON.parse(msg.data);
 
@@ -158,47 +67,95 @@ const handler = (msg) => {
 			recvText(message);
 			break;
 		case wsType.begin:
-			$(
-				"#clock"
-			).children()[0].innerHTML = `<i class="mdui-icon material-icons">access_alarm</i> 课程已进行`;
-			user.class.speaker = message.speaker;
-			user.class.courseName = message.course;
-			user.class.startTime = message.beginning;
-			user.class.clockID = setInterval(() => {
-				let time = ++user.class.clock;
-				let clock = $("#clock").children();
-				clock[1].innerText = ("0" + Math.floor(time / 3600).toString()).slice(-2);
-				clock[2].innerText = ("0" + Math.floor(time / 60).toString()).slice(-2);
-				clock[3].innerText = ("0" + Math.floor(time % 60).toString()).slice(-2);
-			}, 1000);
+			handleBegin(message);
 			break;
 		case wsType.finish:
-			clearInterval(user.class.clockID);
-			sendInform("《" + user.class.courseName + "》" + " 结束", "info");
-			$("#clock").empty();
-			$("#clock").append(
-				`<p><i class="mdui-icon material-icons">free_breakfast</i> 当前没有课程</p>
-					<span>00</span> : <span>00</span> : <span>00</span>`
-			);
-			// 生成报告
-			$("#present").show();
-			$("#present").children()[0].innerHTML = `<h1>${user.class.courseName}</h1>
-				<span class="k">授课人</span><span class="v">${message.speaker}</span>
-				<span class="k">开始于</span><span class="v">${message.beginning}</span>
-				<span class="k">课程时长</span><span class="v">${message.duration}</span>`;
-
-			// 收尾
-			user.class.isInClass = false;
-			user.class.isRecord = false;
-			user.class.speaker = "";
-			user.class.courseName = "";
-			user.class.startTime = "";
-			user.class.clockID = null;
-			user.class.clock = 0;
+			handleFinish(message);
 			break;
 		default:
 			// DEV
 			console.log("未捕获：" + message);
 			break;
 	}
+};
+
+// 保存笔记
+const saveNote = (e) => {
+	const style = `
+section {
+	width: 70%;
+	margin: 0 auto;
+}
+table {
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+}
+table td,
+table th {
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding: 3px 5px;
+}
+table th {
+  border-bottom: 2px solid #ccc;
+  text-align: center;
+}
+blockquote {
+  display: block;
+  border-left: 8px solid #d0e5f2;
+  padding: 5px 10px;
+  margin: 10px 0;
+  line-height: 1.4;
+  font-size: 100%;
+  background-color: #f1f1f1;
+}
+code {
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+  background-color: #f1f1f1;
+  border-radius: 3px;
+  padding: 3px 5px;
+  margin: 0 3px;
+}
+pre code {
+  display: block;
+}
+ul, ol {
+  margin: 10px 0 10px 20px;
+}`;
+	const html = `
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>无距远程课堂 听课笔记</title>
+</head>
+<style>
+	${style}
+</style>
+<body>
+	<section>
+		${config.editorNode.txt.html()}
+	</section>
+</body>
+</html>`;
+
+	let exportBlob = new Blob([html]);
+	let blobUrl = window.URL.createObjectURL(exportBlob);
+	let proxy = $("#download")[0];
+	proxy.href = blobUrl;
+	let time = new Date();
+
+	proxy.download =
+		"笔记_" +
+		time.getMonth() +
+		"月" +
+		time.getDate() +
+		"日_" +
+		time.getHours() +
+		"_" +
+		time.getSeconds() +
+		".html";
+	proxy.click();
 };

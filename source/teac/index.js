@@ -1,29 +1,11 @@
 $(() => {
-	user.username = localStorage.getItem("username") || "Developer-Teac"; // DEV
-	user.permission = localStorage.getItem("permission") === "true" ? true : false;
-
-	const ws = {
-		socketOnOpen: () => {},
-		socketOnClose: () => sendInform("您已离开教室", "info"),
-		socketOnMessage: (msg) => handler(msg),
-		socketOnError: (e) => {
-			console.log(e);
-		},
-		socketUrl: "wss://www.uiofield.top/lessDistance/websocket",
-	};
-
-	user.communication = new Socket(ws);
-	user.communication.connect();
+	initWebSocket(); // 获取信息、建立 WebSocket 连接
 
 	if (null === (config.canvasNode = $("#canvas-node")[0])) {
 		sendInform("您的浏览器不支持 Canvas，请使用 Firefox 或 Chrome", "warn");
 		return;
 	} else {
-		// 初始化节点
-		config.canvasCtx = config.canvasNode.getContext("2d");
-		config.paintNode = $("#canvas-paint")[0];
-		config.paintCtx = config.paintNode.getContext("2d");
-		config.paintNode.fillStyle = "rgba(255, 255, 255, 0)";
+		initNode(); // 初始化节点
 		store.drawingRing = new canvasRing(config.canvasNode);
 
 		// 加载 PDF 的监听及回调
@@ -119,7 +101,6 @@ $(() => {
 		});
 		config.proxyNode.addEventListener("input", (e) => {
 			if (e.target.inputStatus !== "CHINESE_TYPING") {
-				// toolBox[lineStyle[5]](store.mouseDown, e.target.value);
 				store.drawingRing.do(
 					toolBox[lineStyle[5]],
 					store.mouseDown,
@@ -144,17 +125,8 @@ $(() => {
 			$("#input-proxy")[0].jscolor.show();
 		});
 
-		$("#chat-box textarea")[0].addEventListener("keydown", (e) => {
-			if (e.keyCode === 13) {
-				if (e.shiftKey && e.target.placeholder === "Shift + Enter 发送") {
-					e.preventDefault();
-					textSubmit();
-				} else if (!e.shiftKey && e.target.placeholder === "Enter 发送") {
-					e.preventDefault();
-					textSubmit();
-				}
-			}
-		});
+		// 监听聊天框发送方式的切换
+		listenChatBox();
 	}
 });
 
@@ -172,75 +144,6 @@ const updateColor = (jscolor) => {
 	});
 };
 
-// 切换发送快捷键
-function toggleEnter() {
-	let $input = $("#chat-box div label input");
-	let $textarea = $("#chat-box textarea")[0];
-	if ($input.val() === "true") {
-		$textarea.placeholder = "Shift + Enter 发送";
-		$input.val("false");
-	} else {
-		$textarea.placeholder = "Enter 发送";
-		$input.val("true");
-	}
-}
-
-// 提交聊天信息
-function textSubmit() {
-	let msg = $("#chat-box textarea").val();
-
-	if (msg !== "" && msg !== "\n") {
-		sendText({
-			type: "chat",
-			name: user.username,
-			role: user.permission,
-			msg,
-		});
-	}
-	$("#chat-box textarea").val("");
-}
-
-// 处理聊天消息
-const recvText = (message) => {
-	let div = document.createElement("div");
-	if (message.name === user.username) {
-		div.setAttribute("class", "self");
-	} else {
-		if (message.role) {
-			div.setAttribute("class", "teac");
-		} else {
-			div.setAttribute("class", "stud");
-		}
-	}
-	div.innerHTML = `<span>${message.name}</span><span>${new Date()
-		.toTimeString()
-		.slice(0, 8)}</span>`;
-	let p = document.createElement("p");
-	p.innerText = message.msg.replace(/"\n"/g, "<br>");
-	div.appendChild(p);
-	$("#chat-message").append(div);
-	$("#chat-message")[0].scrollTop = $("#chat-message")[0].scrollHeight;
-};
-
-// 处理聊天通知
-const recvNotify = (notify, mode) => {
-	if (notify.type == wsType.enter) {
-		let div = document.createElement("div");
-
-		if (notify.role) {
-			div.setAttribute("class", "notify t");
-		} else {
-			div.setAttribute("class", "notify s");
-		}
-
-		div.innerHTML = `<span>${
-			notify.name.length > 16 ? notify.name.slice(16) + "..." : notify.name
-		}</span><span> ${mode ? "进入教室" : "已离开教室"}</span>`;
-		$("#chat-message").append(div);
-		$("#chat-message")[0].scrollTop = $("#chat-message")[0].scrollHeight;
-	}
-};
-
 // 更改课程名
 const changeCourse = (e) => {
 	if ($("#course-input")[0].disabled) {
@@ -256,6 +159,7 @@ const changeCourse = (e) => {
 	}
 };
 
+// 开始、结束课程
 const toggleCourse = (e) => {
 	if (!user.class.isInClass) {
 		$("#present").hide();
@@ -298,6 +202,7 @@ const toggleCourse = (e) => {
 		: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
 };
 
+// 暂停、继续录音
 const toggleRecord = (e) => {
 	if (user.class.isInClass) {
 		// TODO WebRTC
@@ -326,7 +231,7 @@ const handler = (msg) => {
 					user.online = message.online;
 					sendInform("重连成功", "info");
 				} else {
-					window.location = "/stud/index.html";
+					window.location = "/source/stud/index.html";
 				}
 			}
 			break;
@@ -338,49 +243,10 @@ const handler = (msg) => {
 			recvText(message);
 			break;
 		case wsType.begin:
-			$(
-				"#clock"
-			).children()[0].innerHTML = `<i class="mdui-icon material-icons">access_alarm</i> 课程已进行`;
-			user.class.speaker = message.speaker;
-			user.class.courseName = message.course;
-			user.class.startTime = message.beginning;
-			user.class.clockID = setInterval(() => {
-				let time = ++user.class.clock;
-				let clock = $("#clock").children();
-				clock[1].innerText = ("0" + Math.floor(time / 3600).toString()).slice(-2);
-				clock[2].innerText = ("0" + Math.floor(time / 60).toString()).slice(-2);
-				clock[3].innerText = ("0" + Math.floor(time % 60).toString()).slice(-2);
-			}, 1000);
+			handleBegin(message);
 			break;
 		case wsType.finish:
-			clearInterval(user.class.clockID);
-			sendInform("《" + user.class.courseName + "》" + " 结束", "info");
-			// DEV 测试时延
-			let $clock = $("#clock");
-			$clock
-				.children()
-				.map((i) => console.log($("#clock").children()[i].innerText));
-
-			$clock.empty();
-			$clock.append(
-				`<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未开课</p>
-					<span>00</span> : <span>00</span> : <span>00</span>`
-			);
-			// 生成报告
-			$("#present").show();
-			$("#present").children()[0].innerHTML = `<h1>${user.class.courseName}</h1>
-				<span class="k">授课人</span><span class="v">${message.speaker}</span>
-				<span class="k">开始于</span><span class="v">${message.beginning}</span>
-				<span class="k">课程时长</span><span class="v">${message.duration}</span>`;
-
-			// 收尾
-			user.class.isInClass = false;
-			user.class.isRecord = false;
-			user.class.speaker = "";
-			user.class.courseName = "";
-			user.class.startTime = "";
-			user.class.clockID = null;
-			user.class.clock = 0;
+			handleFinish(message)
 			break;
 		default:
 			// DEV

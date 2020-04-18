@@ -6,17 +6,13 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 	<title>无距远程课堂 登录</title>
 	<link rel="stylesheet/less" type="text/css" href="index.less" />
-	<!-- DEV -->
-	<script src="../../lib/less.min.js"></script>
-	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
-	<link rel="stylesheet" href="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/css/mdui.min.css">
-	<script src="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/js/mdui.min.js"></script>
+	<script src="https://cdn.bootcss.com/less.js/3.11.1/less.min.js"></script>
+	<!-- 预加载 -->
+	<link rel="stylesheet" href="https://cdn.bootcss.com/mdui/0.4.3/css/mdui.min.css">
+	<script src="https://cdn.bootcss.com/mdui/0.4.3/js/mdui.js"></script>
 </head>
 
 <body>
-	<!-- DEV -->
-	<script src="../../lib/jquery.min.js"></script>
-	<!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
 	<nav id="bg"></nav>
 	<main>
 		<div class="login-box">
@@ -45,8 +41,49 @@
 		</div>
 	</main>
 	<div id="notify-box"> </div>
-	<script src="verify.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 	<script src="index.js"></script>
+	<script>
+		function signup(e = null) {
+			const rootUrl = "https://www.uiofield.top/lessDistance";
+			if (e === null || e.keyCode === 13) {
+				if ($("input[name='usertype']:checked").val() === undefined) {
+					sendInform("请选择用户类型", "warn");
+				} else if ($("#username").val() === "") {
+					sendInform("账号为空", "warn");
+				} else if ($("#password").val() === "") {
+					sendInform("密码为空", "warn");
+				} else if ($("#repeat").val() !== $("#password").val()) {
+					sendInform("密码不一致", "warn");
+					$("#repeat").val("");
+					return;
+				} else {
+					$.ajax({
+						method: "POST",
+						url: rootUrl + "/interface/register",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						xhrFields: {
+							withCredentials: true,
+						},
+						data: JSON.stringify({
+							username: $("#username").val(),
+							password: $("#password").val(),
+							permission: $("input[name='usertype']:checked").val(),
+						}),
+						success: function (data) {
+							if (data.code === 13) {
+								window.location = "/auth/signin.html";
+							} else {
+								sendInform(data.message, "warn");
+							}
+						},
+					});
+				}
+			}
+		}
+	</script>
 </body>
 
 </html>
