@@ -76,11 +76,18 @@ $(() => {
 							}
 						});
 						config.paintNode.addEventListener("mouseup", (event) => {
-							let mouseUp = windowToCanvas(event.clientX, event.clientY);
-							store.drawingRing.do(toolBox[lineStyle[store.type]], mouseUp);
 							store.dragging = false;
 							if (store.type === 5) {
 								config.proxyNode.focus();
+							} else {
+								let mouseUp = windowToCanvas(
+									event.clientX,
+									event.clientY
+								);
+								store.drawingRing.do(
+									toolBox[lineStyle[store.type]],
+									mouseUp
+								);
 							}
 						});
 					},
@@ -234,6 +241,7 @@ const recvNotify = (notify, mode) => {
 	}
 };
 
+// 更改课程名
 const changeCourse = (e) => {
 	if ($("#course-input")[0].disabled) {
 		$("#course-input")[0].disabled = false;

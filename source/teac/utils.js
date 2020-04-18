@@ -276,11 +276,11 @@ const toolBox = {
 		config.paintCtx.stroke();
 	},
 	text: (mouseMove, text) => {
-		config.paintCtx.font = `${store.size}px 'SFPing Fang', sans-serif`;
+		config.paintCtx.font = `${store.size + 14}px 'SFPing Fang', sans-serif`;
 		config.paintCtx.fillStyle = store.color;
 		config.paintCtx.fillText(text, mouseMove.x, mouseMove.y);
 	},
-	pen: (mouseMove) => {},
+	pencil: (mouseMove) => {},
 	// 绘制多边形
 	polygon: (mouseMove, sides) => {
 		config.paintCtx.beginPath(); // 清除当前路径
