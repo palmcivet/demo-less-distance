@@ -79,7 +79,7 @@ $(() => {
 							store.dragging = false;
 							if (store.type === 5) {
 								config.proxyNode.focus();
-							} else {
+							} else if (store.type !== 0) {
 								let mouseUp = windowToCanvas(
 									event.clientX,
 									event.clientY

@@ -57,7 +57,7 @@ function gotoPage(page) {
 }
 
 /**
- *
+ * 跳转页
  * @param {Boolean|Number} page - true|false|页数，前后翻页和跳转页
  */
 const turnPage = (page) => {
@@ -191,11 +191,22 @@ const changeType = (typeId) => {
 };
 
 // 修改粗细
+const changeWidth = (e) => {
+	let size = parseInt(e.target.value);
+	if (isNaN(size)) {
+		sendInform("请输入数值", "warn");
+		e.target.value = store.size;
+	} else if (size < 1 || size > 6) {
+		sendInform("建议粗细在 1~6 之间", "info");
+		e.target.value = store.size;
+	} else {
+		store.size = size;
+	}
+};
 
 // 修改颜色
 const changeColor = (color) => {
 	store.color = color;
-	// TODO 同步信息
 };
 
 class canvasRing {
@@ -233,7 +244,6 @@ class canvasRing {
 
 	undo() {
 		if (this.ringSeak > 0) {
-			console.log(this.ringSeak, this.ringGap);
 			config.paintCtx.putImageData(this.ring[--this.ringSeak], 0, 0);
 		}
 	}
@@ -276,7 +286,7 @@ const toolBox = {
 		config.paintCtx.stroke();
 	},
 	text: (mouseMove, text) => {
-		config.paintCtx.font = `${store.size + 14}px 'SFPing Fang', sans-serif`;
+		config.paintCtx.font = `${store.size + 13}px 'SFPing Fang', sans-serif`;
 		config.paintCtx.fillStyle = store.color;
 		config.paintCtx.fillText(text, mouseMove.x, mouseMove.y);
 	},

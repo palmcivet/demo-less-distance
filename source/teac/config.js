@@ -62,6 +62,6 @@ const store = {
 	mouseDown: null, // 保存鼠标按下时的 canvas 坐标
 	dragging: false, // 标识鼠标是否处于拖拽状态
 	color: "red", //笔触颜色
-	size: 1, // 笔触粗细
+	size: 2, // 笔触粗细
 	type: 0, //笔触类型
 };
