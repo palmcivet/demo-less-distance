@@ -3,10 +3,115 @@ const sendText = (msg) => {
 	if (user.communication.ws) {
 		user.communication.sendMessage(msg);
 	} else {
-		// TODO 优化警告
-		console.log("offline");
+		sendInform("已掉线，正在帮您重连", "error");
 		user.communication.connect();
+		setTimeout(() => sendText(msg), 2000);
 	}
+};
+
+// 发送系统通知
+const sendInform = (msg, type, time = 2000, pos = { top: "10%", left: "10%" }) => {
+	let p = document.createElement("p");
+	p.setAttribute("style", `top: ${pos.top}, left: ${pos.left}`);
+
+	switch (type) {
+		case "warn":
+			p.setAttribute("class", "warn");
+			p.innerHTML = `<i class="mdui-icon material-icons">warning</i>  ${msg}`;
+			break;
+		case "error":
+			p.setAttribute("class", "error");
+			p.innerHTML = `<i class="mdui-icon material-icons">error</i>  ${msg}`;
+			break;
+		default:
+			p.setAttribute("class", "info");
+			p.innerHTML = `<i class="mdui-icon material-icons">notifications</i> ${msg}`;
+			break;
+	}
+	$("#notify-box")[0].append(p);
+
+	return setTimeout(() => $("#notify-box").children()[0].remove(), time);
+};
+
+// 保存笔记
+const saveNote = (e) => {
+	const style = `
+section {
+	width: 70%;
+	margin: 0 auto;
+}
+table {
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+}
+table td,
+table th {
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding: 3px 5px;
+}
+table th {
+  border-bottom: 2px solid #ccc;
+  text-align: center;
+}
+blockquote {
+  display: block;
+  border-left: 8px solid #d0e5f2;
+  padding: 5px 10px;
+  margin: 10px 0;
+  line-height: 1.4;
+  font-size: 100%;
+  background-color: #f1f1f1;
+}
+code {
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+  background-color: #f1f1f1;
+  border-radius: 3px;
+  padding: 3px 5px;
+  margin: 0 3px;
+}
+pre code {
+  display: block;
+}
+ul, ol {
+  margin: 10px 0 10px 20px;
+}`;
+	const html = `
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>无距远程课堂 听课笔记</title>
+</head>
+<style>
+	${style}
+</style>
+<body>
+	<section>
+		${config.editorNode.txt.html()}
+	</section>
+</body>
+</html>`;
+
+	let exportBlob = new Blob([html]);
+	let blobUrl = window.URL.createObjectURL(exportBlob);
+	let proxy = $("#download")[0];
+	proxy.href = blobUrl;
+	let time = new Date();
+
+	proxy.download =
+		"笔记_" +
+		time.getMonth() +
+		"月" +
+		time.getDate() +
+		"日_" +
+		time.getHours() +
+		"_" +
+		time.getSeconds() +
+		".html";
+	proxy.click();
 };
 
 /**

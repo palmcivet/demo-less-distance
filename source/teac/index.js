@@ -1,5 +1,5 @@
 $(() => {
-	user.username = localStorage.getItem("username") || "developer"; // DEV
+	user.username = localStorage.getItem("username") || "Developer-Teac"; // DEV
 	user.permission = localStorage.getItem("permission") === "true" ? true : false;
 
 	const ws = {
@@ -182,6 +182,7 @@ function textSubmit() {
 	$("#chat-box textarea").val("");
 }
 
+// 处理聊天消息
 const recvText = (message) => {
 	let div = document.createElement("div");
 	if (message.name === user.username) {
@@ -193,8 +194,9 @@ const recvText = (message) => {
 			div.setAttribute("class", "stud");
 		}
 	}
-	div.innerHTML = `<span>${message.name}</span>
-<span>${new Date().toTimeString().slice(0, 8)}</span>`;
+	div.innerHTML = `<span>${message.name}</span><span>${new Date()
+		.toTimeString()
+		.slice(0, 8)}</span>`;
 	let p = document.createElement("p");
 	p.innerText = message.msg.replace(/"\n"/g, "<br>");
 	div.appendChild(p);
@@ -202,6 +204,7 @@ const recvText = (message) => {
 	$("#chat-message")[0].scrollTop = $("#chat-message")[0].scrollHeight;
 };
 
+// 处理聊天通知
 const recvNotify = (notify, mode) => {
 	if (notify.type == wsType.enter) {
 		let div = document.createElement("div");

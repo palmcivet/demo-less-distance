@@ -40,7 +40,7 @@ const user = {
 
 const config = {
 	libSrc: "../script/pdf.worker.min.js", // Lib 的 work 目录
-	pdfURL: "../test/src.pdf", // 路径|ArrayBuffer
+	pdfURL: "", // 路径|ArrayBuffer
 	canvasNode: null, // canvas 节点，通过 ID 获取
 	canvasCtx: null, // canvas 的 context
 	paintNode: null, // paint 节点，通过 ID 获取

@@ -3,13 +3,14 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-	<title>学生端</title>
+	<title>无距远程课堂 学生端</title>
 	<link rel="stylesheet/less" type="text/css" href="index.less" />
 	<!-- DEV -->
 	<script src="../../lib/less.min.js"></script>
+	<script src="../../lib/mdui.min.js"></script>
 	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.11.1/less.min.js"></script> -->
 	<link rel="stylesheet" href="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/css/mdui.min.css">
-	<script src="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/js/mdui.min.js"></script>
+	<!-- <script src="//cdnjs.loli.net/ajax/libs/mdui/0.4.3/js/mdui.min.js"></script> -->
 </head>
 
 <body>
@@ -21,9 +22,17 @@
 
 	<main class="main">
 		<article>
-			<header id="courseName"></header>
-
+			<h1 id="courseName"></h1>
 			<section>
+				<div id="clock">
+					<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未开课</p>
+					<span>00</span> : <span>00</span> : <span>00</span>
+				</div>
+				<header id="present">
+					<div>
+						<h1>当前没有课程</h1>
+					</div>
+				</header>
 				<canvas id="canvas-paint" width="960px" height="540px"></canvas>
 				<canvas id="canvas-node" width="960px" height="540px"></canvas>
 				<img id="img-proxy">
@@ -66,11 +75,19 @@
 			</article>
 
 			<article id="note" class="mdui-container">
+				<div id="editor"></div>
+				<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="saveNote(event)">
+					<i class="mdui-icon material-icons">file_download</i> 保存笔记
+				</button>
+				<a id="download"></a>
 			</article>
 		</aside>
+		<div id="notify-box"> </div>
 	</main>
 
 	<script src="config.js"></script>
+	<script src="wangEditor.min.js"></script>
+	<script src="FileSaver.js"></script>
 	<script src="utils.js"></script>
 	<script src="index.js"></script>
 </body>

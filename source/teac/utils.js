@@ -1,7 +1,7 @@
 function gotoPage(page) {
 	// 保存笔记，先看改没改，再看有没有
 	if (store.isModified) {
-		store.pdfStorage[store.currentPage] = config.paintNode.toDataURL("image/jpeg", 1);
+		store.pdfStorage[store.currentPage] = config.paintNode.toDataURL("image/png", 1);
 		store.isModified = false;
 	}
 
@@ -111,6 +111,7 @@ const uploadPdf = () => {
 // 发送 WS 信息
 const sendText = (msg) => {
 	if (user.communication.ws) {
+		// DEV
 		console.log(msg);
 		user.communication.sendMessage(msg);
 	} else {
@@ -120,6 +121,7 @@ const sendText = (msg) => {
 	}
 };
 
+// 发送系统通知
 const sendInform = (msg, type, time = 2000, pos = { top: "10%", left: "10%" }) => {
 	let p = document.createElement("p");
 	p.setAttribute("style", `top: ${pos.top}, left: ${pos.left}`);
