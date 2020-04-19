@@ -27,7 +27,7 @@
 				</div>
 				<aside>
 					<ul></ul>
-					<input title="粗细" value="1" onblur="changeWidth(event)">
+					<input title="粗细" value="2" onblur="changeWidth(event)">
 					<button title="撤销" onclick="store.drawingRing.undo()"><i
 							class="mdui-icon material-icons">undo</i></button>
 					<button title="重做" onclick="store.drawingRing.redo()"><i
@@ -89,7 +89,7 @@
 				<section>
 					<div class="mdui-textfield mdui-textfield-floating-label">
 						<label class="mdui-textfield-label">课程名</label>
-						<input class="mdui-textfield-input" id="course-input" type="text" />
+						<input class="mdui-textfield-input" id="course-input" type="text" title="填写课程名" />
 					</div>
 					<button class="mdui-btn mdui-ripple" title="完成" onclick="changeCourse(event)">
 						<i class="mdui-icon material-icons">spellcheck</i>
@@ -97,7 +97,7 @@
 				</section>
 
 				<section class="mdui-btn mdui-ripple mdui-color-deep-purple-a400">
-					<label for="load">
+					<label for="load" title="加载课件">
 						<i class="mdui-icon material-icons">library_books</i> 加载课件
 					</label>
 					<input id="load" type="file" accept=".pdf" />
@@ -109,16 +109,18 @@
 				</section>
 
 				<section>
-					<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="toggleCourse()" id="toggleCourse">
+					<button class="mdui-btn mdui-ripple mdui-col-xs-6" title="开始课程" onclick="toggleCourse()"
+						id="toggleCourse">
 						<i class="mdui-icon material-icons">power_settings_new</i> 开始课程
 					</button>
-					<button class="mdui-btn mdui-ripple mdui-col-xs-6" onclick="toggleRecord()" id="toggleRecord">
+					<button class="mdui-btn mdui-ripple mdui-col-xs-6" title="开始录音" onclick="toggleRecord()"
+						id="toggleRecord">
 						<i class="mdui-icon material-icons">keyboard_voice</i> 开始录音
 					</button>
-					<button class="mdui-btn mdui-ripple mdui-col-xs-6">
+					<button class="mdui-btn mdui-ripple mdui-col-xs-6" title="上传课件">
 						<i class="mdui-icon material-icons">cloud_upload</i> 上传课件
 					</button>
-					<button class="mdui-btn mdui-ripple mdui-col-xs-6">
+					<button class="mdui-btn mdui-ripple mdui-col-xs-6" title="下载批注">
 						<i class="mdui-icon material-icons">cloud_download</i> 下载批注
 					</button>
 				</section>

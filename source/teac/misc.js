@@ -5,8 +5,8 @@ const lineStyle = [
 	"triangle",
 	"circle",
 	"text",
-	// "pencil",
-	// "eraser",
+	"pencil",
+	"eraser",
 ];
 
 const config = {
@@ -45,15 +45,6 @@ function gotoPage(page) {
 		store.pdfStorage[store.currentPage] = config.paintNode.toDataURL("image/png", 1);
 		store.isModified = false;
 	}
-	store.drawingRing.clear();
-	store.drawingRing.init(
-		config.paintCtx.getImageData(
-			0,
-			0,
-			config.paintNode.width,
-			config.paintNode.height
-		)
-	);
 
 	// 切换页面
 	store.currentPage = page;
@@ -95,6 +86,15 @@ function gotoPage(page) {
 		config.imageNode.src = img;
 		$("#img-proxy").ready(() => config.paintCtx.drawImage(config.imageNode, 0, 0));
 	}
+	store.drawingRing.clear();
+	store.drawingRing.init(
+		config.paintCtx.getImageData(
+			0,
+			0,
+			config.paintNode.width,
+			config.paintNode.height
+		)
+	);
 }
 
 /**
@@ -192,6 +192,24 @@ const changeType = (typeId) => {
 	$("ul li")[store.type].innerHTML = genIcon(store.type);
 	store.type = typeId;
 	$("ul li")[typeId].innerHTML = genIcon(typeId, true);
+
+	switch (typeId) {
+		case 0:
+			config.paintNode.style["cursor"] = "default";
+			break;
+		case 5:
+			config.paintNode.style["cursor"] = "text";
+			break;
+		case 6:
+			config.paintNode.style["cursor"] = "crosshair";
+			break;
+		case 7:
+			config.paintNode.style["cursor"] =
+				"url(/source/static/icon/cursor.png), crosshair";
+			break;
+		default:
+			break;
+	}
 };
 
 // 修改粗细
@@ -232,7 +250,7 @@ class canvasRing {
 		this.ringGap = this.ringSeak = -1;
 	}
 
-	do(callback, ...params) {
+	do(callback = null, ...params) {
 		this.ring[++this.ringSeak] = config.paintCtx.getImageData(
 			0,
 			0,
@@ -253,7 +271,7 @@ class canvasRing {
 	}
 
 	redo() {
-		if (this.ringSeak < this.ringGap) {
+		if (this.ringSeak < this.ringGap && this.ringSeak > -1) {
 			config.paintCtx.putImageData(this.ring[++this.ringSeak], 0, 0);
 		}
 	}
@@ -294,7 +312,23 @@ const toolBox = {
 		config.paintCtx.fillStyle = store.color;
 		config.paintCtx.fillText(text, mouseMove.x, mouseMove.y);
 	},
-	pencil: (mouseMove) => {},
+	eraser: (mouseMove) => {
+		config.paintCtx.clearRect(
+			mouseMove.x,
+			mouseMove.y,
+			store.size + 5,
+			store.size + 5
+		);
+	},
+	pencil: (mouseMove) => {
+		config.paintCtx.beginPath();
+		config.paintCtx.moveTo(store.mouseDown.x, store.mouseDown.y);
+		config.paintCtx.lineTo(mouseMove.x, mouseMove.y);
+		config.paintCtx.strokeStyle = store.color;
+		config.paintCtx.lineWidth = store.size;
+		config.paintCtx.stroke();
+		store.mouseDown = mouseMove;
+	},
 	// 绘制多边形
 	polygon: (mouseMove, sides) => {
 		config.paintCtx.beginPath(); // 清除当前路径

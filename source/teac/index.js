@@ -30,7 +30,6 @@ $(() => {
 							);
 							if (store.type === 5) {
 								config.proxyNode.value = null;
-
 								$("#textarea-proxy").css({
 									left: store.mouseDown.x,
 									top: store.mouseDown.y,
@@ -43,18 +42,15 @@ $(() => {
 						config.paintNode.addEventListener("mousemove", (event) => {
 							let mouseMove = windowToCanvas(event.clientX, event.clientY);
 							if (
-								mouseMove.x <= config.paintNode.width ||
-								mouseMove.y <= config.paintNode.height
+								store.dragging &&
+								(mouseMove.x <= config.paintNode.width ||
+									mouseMove.y <= config.paintNode.height)
 							) {
-								if (store.type === 5) {
-									event.target.style["cursor"] = "text";
-								} else if (store.type === 0) {
-									event.target.style["cursor"] = "default";
-								} else if (store.dragging && store.type !== 0) {
-									event.target.style["cursor"] = "crosshair";
+								if (store.type < 5 && store.type > 0) {
+									config.paintNode.style["cursor"] = "crosshair";
 									restoreDrawingSurface();
-									toolBox[lineStyle[store.type]](mouseMove);
 								}
+								toolBox[lineStyle[store.type]](mouseMove);
 							}
 						});
 						config.paintNode.addEventListener("mouseup", (event) => {
@@ -246,7 +242,10 @@ const handler = (msg) => {
 			handleBegin(message);
 			break;
 		case wsType.finish:
-			handleFinish(message)
+			handleFinish(message);
+			if (location === "/source/stud/index.html") {
+				window.location = "/source/teac/index.html";
+			}
 			break;
 		default:
 			// DEV
