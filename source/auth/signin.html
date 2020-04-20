@@ -81,9 +81,9 @@
 										$("input[name='usertype']:checked").val()
 									);
 									if (data.info === true) {
-										window.location = "/source/teac/index.html";
+										location = "/source/teac/index.html";
 									} else {
-										window.location = "/source/stud/index.html";
+										location = "/source/stud/index.html";
 									}
 								} else {
 									sendInform(data.message, "warn");

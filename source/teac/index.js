@@ -239,7 +239,7 @@ const handler = (msg) => {
 					user.online = message.online;
 					sendInform("重连成功", "info");
 				} else {
-					window.location = "/source/stud/index.html";
+					location = "/source/stud/index.html";
 				}
 			}
 			break;
@@ -256,7 +256,7 @@ const handler = (msg) => {
 		case wsType.finish:
 			handleFinish(message);
 			if (location === "/source/stud/index.html") {
-				window.location = "/source/teac/index.html";
+				location = "/source/teac/index.html";
 			}
 			break;
 		default:

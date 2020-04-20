@@ -292,13 +292,25 @@ const handleFinish = (message) => {
 	user.class.clock = 0;
 };
 
+/* =============== 以下处理登录登出 =============== */
+
+const handleSignin = () => {
+	user.username = localStorage.getItem("username") || "Developer-Stu"; // DEV 调试名称
+	user.permission = localStorage.getItem("permission") === "true" ? true : false;
+	$(".mdui-chip-title")[0].innerHTML = user.username;
+};
+
+const handleSignout = () => {
+	localStorage.removeItem("username");
+	localStorage.removeItem("permission");
+	location = "/source/auth/signin.html";
+};
+
 /* =============== 以下为初始化 =============== */
 
 // 获取信息、建立 WebSocket 连接
 const initWebSocket = () => {
-	user.username = localStorage.getItem("username") || "Developer-Stu"; // DEV 调试名称
-	user.permission = localStorage.getItem("permission") === "true" ? true : false;
-
+	handleSignin();
 	const ws = {
 		socketOnOpen: () =>
 			sendText({

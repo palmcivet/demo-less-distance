@@ -79,7 +79,7 @@ function gotoPage(page) {
 
 	setTimeout(() => {
 		if (user.class.isInClass) asyncSlide();
-	}, 200);
+	}, 180);
 	store.drawingRing.clear();
 
 	// 加载笔记

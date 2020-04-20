@@ -74,7 +74,7 @@
                         }),
                         success: function (data) {
                             if (data.code === 13) {
-                                window.location = "/auth/signin.html";
+                                location = "/auth/signin.html";
                                 sendInform("注册成功，请前去登陆", "warn");
                             } else {
                                 sendInform(data.message, "warn");

@@ -60,11 +60,13 @@ const handler = (msg) => {
 				user.class.speaker = message.class.speaker;
 				user.class.courseName = message.class.course;
 				user.class.startTime = message.class.beginning;
-				config.slideNode.width = message.width;
-				config.slideNode.height = message.height;
-				config.noteNode.width = message.width;
-				config.noteNode.height = message.height;
-				sendInform("重连成功", "info");
+				config.slideNode.src = message.class.slide;
+				config.noteNode.src = message.class.note;
+				config.slideNode.width = message.class.width;
+				config.slideNode.height = message.class.height;
+				config.noteNode.width = message.class.width;
+				config.noteNode.height = message.class.height;
+				sendInform("欢迎进入课堂", "info");
 			}
 			break;
 		case wsType.leave:
@@ -102,6 +104,11 @@ const handler = (msg) => {
 
 // 保存笔记
 const saveNote = (e) => {
+	if ("<p><br></p>" === (note = config.editorNode.txt.html())) {
+		sendInform("笔记为空，无需保存", "info");
+		return;
+	}
+
 	const style = `
 section {
 	width: 70%;
@@ -157,7 +164,7 @@ ul, ol {
 </style>
 <body>
 	<section>
-		${config.editorNode.txt.html()}
+		${note}
 	</section>
 </body>
 </html>`;
