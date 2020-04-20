@@ -89,6 +89,17 @@ main.main > article {
 				}
 			}
 		}
+
+		& > img#note-proxy {
+			position: absolute;
+			z-index: 10;
+		}
+
+		& > img#slide-proxy {
+			-webkit-box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+			-moz-box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+			box-shadow: -4px 4px 8px rgba(0, 0, 0, 0.5);
+		}
 	}
 }
 
@@ -274,22 +285,4 @@ main.main > aside {
 			visibility: hidden;
 		}
 	}
-}
-
-#canvas-paint {
-	position: absolute;
-	z-index: 10;
-}
-
-#canvas-node {
-	-webkit-box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
-	-moz-box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
-	box-shadow: -4px 4px 8px rgba(0, 0, 0, 0.5);
-}
-
-#img-proxy {
-	position: absolute;
-	z-index: -10;
-	width: 0px;
-	height: 0px;
 }

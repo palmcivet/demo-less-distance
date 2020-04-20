@@ -16,7 +16,6 @@ interface.md
 /.github/*
 /**/lib/*
 /test/*
-/**/performance.*
 /**/*.zip
 /**/*.rar
 

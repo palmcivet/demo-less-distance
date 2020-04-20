@@ -5,12 +5,19 @@ $(() => {
 		sendInform("您的浏览器不支持 Canvas，请使用 Firefox 或 Chrome", "warn");
 		return;
 	} else {
-		initNode(); // 初始化节点
+		// 初始化节点
+		config.canvasCtx = config.canvasNode.getContext("2d");
+		config.paintNode = $("#canvas-paint")[0];
+		config.paintCtx = config.paintNode.getContext("2d");
+		config.paintNode.fillStyle = "rgba(255, 255, 255, 0)";
+
 		store.drawingRing = new canvasRing(config.canvasNode);
 
 		// 加载 PDF 的监听及回调
 		pdfjsLib.workerSrc = config.libSrc;
 		$("#load")[0].addEventListener("change", () => {
+			clearPaint(); // 清除上节课内容
+
 			let fr = new FileReader();
 			fr.readAsArrayBuffer($("#load")[0].files[0]);
 			fr.onload = () => {
@@ -41,12 +48,14 @@ $(() => {
 						});
 						config.paintNode.addEventListener("mousemove", (event) => {
 							let mouseMove = windowToCanvas(event.clientX, event.clientY);
+							if (store.type == 5) return;
 							if (
 								store.dragging &&
+								store.type !== 0 &&
 								(mouseMove.x <= config.paintNode.width ||
 									mouseMove.y <= config.paintNode.height)
 							) {
-								if (store.type < 5 && store.type > 0) {
+								if (store.type < 5) {
 									config.paintNode.style["cursor"] = "crosshair";
 									restoreDrawingSurface();
 								}
@@ -158,7 +167,6 @@ const changeCourse = (e) => {
 // 开始、结束课程
 const toggleCourse = (e) => {
 	if (!user.class.isInClass) {
-		$("#present").hide();
 		let course = $("#course-input").val();
 		if (!course) {
 			sendInform("请填写课程名", "warn");
@@ -172,9 +180,12 @@ const toggleCourse = (e) => {
 				type: wsType.begin,
 				speaker: user.username,
 				course,
+				width: config.canvasNode.width,
+				height: config.canvasNode.height,
 				slide: config.canvasNode.toDataURL("image/png"),
 				note: config.paintNode.toDataURL("image/png"),
 			});
+
 			// 开始上课，同时打开录音
 			// startTime 字段在收到 begin 消息填写，使用服务器时间
 			user.class.isInClass = !user.class.isInClass;
@@ -187,6 +198,7 @@ const toggleCourse = (e) => {
 			type: wsType.finish,
 			speaker: user.username,
 		});
+		clearPaint();
 		user.class.isInClass = false;
 		user.class.isRecord = false;
 	}

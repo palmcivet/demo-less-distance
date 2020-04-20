@@ -3,16 +3,18 @@ const config = {
 	canvasCtx: null, // canvas 的 context
 	paintNode: null, // paint 节点，通过 ID 获取
 	paintCtx: null, // paint 的 context
-	imageNode: $("#img-proxy")[0], // 标注的 img 代理
+	slideNode: $("#slide-proxy")[0], // slide 的 img 代理
+	noteNode: $("#note-proxy")[0], // 标注的 img 代理
 	editorNode: null, // 笔记节点
 };
 
 $(() => {
+	initWebSocket(); // 获取信息、建立 WebSocket 连接
+
 	if (null === (config.canvasNode = $("#canvas-node")[0])) {
 		alert("您的浏览器不支持 Canvas");
 		return;
 	} else {
-		initNode(); // 初始化节点
 		listenChatBox(); // 监听聊天框发送方式的切换
 
 		// 初始化富文本编辑器
@@ -20,6 +22,9 @@ $(() => {
 		let editor;
 		config.editorNode = editor = new E("#editor");
 
+		editor.customConfig.pasteIgnoreImg = false;
+		editor.customConfig.pasteFilterStyle = false;
+		editor.customConfig.uploadImgShowBase64 = true;
 		editor.customConfig.menus = [
 			"undo", // 撤销
 			"redo", // 重复
@@ -38,24 +43,27 @@ $(() => {
 			"video", // 插入视频
 			"link", // 插入链接
 		];
-		editor.customConfig.pasteIgnoreImg = false;
-		editor.customConfig.pasteFilterStyle = false;
-		editor.customConfig.uploadImgShowBase64 = true;
 		editor.create();
 	}
 });
 
 const handler = (msg) => {
 	message = JSON.parse(msg.data);
+	console.log(message);
 
 	switch (message.type) {
 		case wsType.enter:
 			recvNotify(message, true);
 			if (message.class) {
+				$("#present").hide();
+				user.online = message.online;
 				user.class.speaker = message.class.speaker;
 				user.class.courseName = message.class.course;
 				user.class.startTime = message.class.beginning;
-				user.online = message.online;
+				config.slideNode.width = message.width;
+				config.slideNode.height = message.height;
+				config.noteNode.width = message.width;
+				config.noteNode.height = message.height;
 				sendInform("重连成功", "info");
 			}
 			break;
@@ -68,13 +76,26 @@ const handler = (msg) => {
 			break;
 		case wsType.begin:
 			handleBegin(message);
+			config.slideNode.width = message.width;
+			config.slideNode.height = message.height;
+			config.noteNode.width = message.width;
+			config.noteNode.height = message.height;
+			config.slideNode.src = message.slide;
+			config.noteNode.src = message.note;
 			break;
 		case wsType.finish:
+			config.slideNode.src = "";
+			config.noteNode.src = "";
 			handleFinish(message);
 			break;
+		case wsType.slide:
+			config.slideNode.src = message.slide;
+			config.noteNode.src = "";
+			break;
+		case wsType.note:
+			config.noteNode.src = message.note;
+			break;
 		default:
-			// DEV
-			console.log("未捕获：" + message);
 			break;
 	}
 };

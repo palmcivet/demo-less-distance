@@ -40,20 +40,21 @@ const store = {
 };
 
 function gotoPage(page) {
-	// 保存笔记，先看改没改，再看有没有
+	// 保存笔记：先看改没改，再看有没有
 	if (store.isModified) {
 		store.pdfStorage[store.currentPage] = config.paintNode.toDataURL("image/png", 1);
 		store.isModified = false;
 	}
+	clearPaint();
 
-	// 切换页面
+	// 修改 PDF 页数
 	store.currentPage = page;
 	config.jumpNode.placeholder = store.currentPage + " / " + store.pdfPageNum;
 
+	// 加载 PDF 页
 	store.pdfContent.getPage(page).then((resPage) => {
 		let viewport;
-		// 首次加载使用最佳缩放比例
-		let isFirst = false;
+		let isFirst = false; // 首次加载使用最佳缩放比例
 		if (null === store.currentScale) {
 			isFirst = true;
 			let optimScale = 0.9;
@@ -76,25 +77,34 @@ function gotoPage(page) {
 		}
 	});
 
-	// 加载笔记，先看有没有
-	config.paintCtx.clearRect(0, 0, config.paintNode.width, config.paintNode.width);
+	setTimeout(() => {
+		if (user.class.isInClass) asyncSlide();
+	}, 200);
+	store.drawingRing.clear();
+
+	// 加载笔记
 	if (undefined !== (img = store.pdfStorage[page])) {
-		if (user.class.isInClass) {
-			asyncSlide();
-			asyncNote(img);
-		}
+		if (user.class.isInClass) asyncNote(img);
 		config.imageNode.src = img;
 		$("#img-proxy").ready(() => config.paintCtx.drawImage(config.imageNode, 0, 0));
+		store.drawingRing.init(
+			config.paintCtx.getImageData(
+				0,
+				0,
+				config.paintNode.width,
+				config.paintNode.height
+			)
+		);
+	} else {
+		store.drawingRing.init(
+			config.paintCtx.getImageData(
+				0,
+				0,
+				config.paintNode.width,
+				config.paintNode.height
+			)
+		);
 	}
-	store.drawingRing.clear();
-	store.drawingRing.init(
-		config.paintCtx.getImageData(
-			0,
-			0,
-			config.paintNode.width,
-			config.paintNode.height
-		)
-	);
 }
 
 /**
@@ -137,13 +147,13 @@ const turnPage = (page) => {
 const asyncSlide = (data = null) => {
 	sendText({
 		type: wsType.slide,
-		data: data || config.canvasNode.toDataURL("image/png", 1),
+		slide: data || config.canvasNode.toDataURL("image/png", 1),
 	});
 };
 
 const asyncNote = (data = null) => {
 	sendText({
-		type: wsType.slide,
+		type: wsType.note,
 		note: data || config.paintNode.toDataURL("image/png", 1),
 	});
 };
@@ -166,6 +176,14 @@ const windowToCanvas = (clientX, clientY) => {
 		y: clientY - axisCanvas.top,
 	};
 };
+
+// 清除 paintNode Canvas
+const clearPaint = () =>
+	config.paintCtx.clearRect(0, 0, config.paintNode.width, config.paintNode.height);
+
+// 清除 canvasNode Canvas
+const clearCanvas = () =>
+	config.canvasCtx.clearRect(0, 0, config.canvasNode.width, config.canvasNode.height);
 
 // 保存 canvas 绘图表面
 const saveDrawingSurface = () =>
@@ -258,6 +276,7 @@ class canvasRing {
 			this.height
 		);
 		callback(...params);
+		if (user.class.isInClass) asyncNote();
 		this.ringGap = this.ringSeak;
 		if (this.ringSeak > this.ringSize) {
 			this.ring = this.ring.slice(-this.ringSize);
@@ -267,19 +286,21 @@ class canvasRing {
 	undo() {
 		if (this.ringSeak > 0) {
 			config.paintCtx.putImageData(this.ring[--this.ringSeak], 0, 0);
+			if (user.class.isInClass) asyncNote();
 		}
 	}
 
 	redo() {
 		if (this.ringSeak < this.ringGap && this.ringSeak > -1) {
 			config.paintCtx.putImageData(this.ring[++this.ringSeak], 0, 0);
+			if (user.class.isInClass) asyncNote();
 		}
 	}
 }
 
 const toolBox = {
 	line: (mouseMove) => {
-		config.paintCtx.beginPath(); // 清除当前路径
+		config.paintCtx.beginPath();
 		config.paintCtx.moveTo(store.mouseDown.x, store.mouseDown.y);
 		config.paintCtx.lineTo(mouseMove.x, mouseMove.y);
 		config.paintCtx.strokeStyle = store.color;
@@ -331,9 +352,9 @@ const toolBox = {
 	},
 	// 绘制多边形
 	polygon: (mouseMove, sides) => {
-		config.paintCtx.beginPath(); // 清除当前路径
-		// 多边形外接圆半径
+		config.paintCtx.beginPath();
 
+		// 多边形外接圆半径
 		let r = Math.sqrt(
 			Math.pow(store.mouseDown.x - mouseMove.x, 2) +
 				Math.pow(store.mouseDown.y - mouseMove.y, 2)

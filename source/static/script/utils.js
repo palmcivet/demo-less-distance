@@ -142,7 +142,7 @@ class Socket {
 /* =============== 以下为公共函数 =============== */
 
 // 发送系统通知
-const sendInform = (msg, type, time = 2000, pos = { top: "10%", left: "10%" }) => {
+function sendInform(msg, type, time = 2000, pos = { top: "10%", left: "10%" }) {
 	let p = document.createElement("p");
 	p.setAttribute("style", `top: ${pos.top}, left: ${pos.left}`);
 
@@ -163,12 +163,12 @@ const sendInform = (msg, type, time = 2000, pos = { top: "10%", left: "10%" }) =
 	$("#notify-box")[0].append(p);
 
 	return setTimeout(() => $("#notify-box").children()[0].remove(), time);
-};
+}
 
 // 发送 WS 信息
 const sendText = (msg) => {
 	if (user.connection.ws) {
-		// DEV
+		// DEV 测试发送数据
 		console.log(msg);
 		user.connection.sendMessage(msg);
 	} else {
@@ -249,6 +249,7 @@ const recvText = (message) => {
 
 // 处理开始课程的逻辑
 const handleBegin = (message) => {
+	$("#present").hide();
 	$(
 		"#clock"
 	).children()[0].innerHTML = `<i class="mdui-icon material-icons">access_alarm</i> 课程已进行`;
@@ -268,10 +269,7 @@ const handleBegin = (message) => {
 const handleFinish = (message) => {
 	clearInterval(user.class.clockID);
 	sendInform("《" + user.class.courseName + "》" + " 结束", "info");
-	// DEV 测试时延
 	let $clock = $("#clock");
-	$clock.children().map((i) => console.log($("#clock").children()[i].innerText));
-
 	$clock.empty();
 	$clock.append(
 		`<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未开课</p>
@@ -298,7 +296,7 @@ const handleFinish = (message) => {
 
 // 获取信息、建立 WebSocket 连接
 const initWebSocket = () => {
-	user.username = localStorage.getItem("username") || "Developer-Stu"; // DEV
+	user.username = localStorage.getItem("username") || "Developer-Stu"; // DEV 调试名称
 	user.permission = localStorage.getItem("permission") === "true" ? true : false;
 
 	const ws = {
@@ -313,19 +311,11 @@ const initWebSocket = () => {
 		socketOnError: (e) => {
 			console.log(e);
 		},
-		socketUrl: "wss://www.uiofield.top/lessDistance/websocket",
+		socketUrl: "ws://101.132.100.188:8080/lessDistance/websocket",
 	};
 
 	user.connection = new Socket(ws);
 	user.connection.connect();
-};
-
-// 初始化节点
-const initNode = () => {
-	config.canvasCtx = config.canvasNode.getContext("2d");
-	config.paintNode = $("#canvas-paint")[0];
-	config.paintCtx = config.paintNode.getContext("2d");
-	config.paintNode.fillStyle = "rgba(255, 255, 255, 0)";
 };
 
 // 监听聊天框发送方式的切换
