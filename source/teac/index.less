@@ -154,16 +154,14 @@ main.main > aside {
 	article#discus {
 		display: flex;
 		flex-direction: column;
+		position: relative;
 		@height-tool: 30px;
 		@height-text: 100px;
-
-		& > section#chat-member {
-			display: none;
-		}
 
 		& > section#chat-message {
 			height: calc(100% - @height-tool - @height-text);
 			overflow-y: auto;
+			padding-top: 25px; // 提示框
 
 			& > div {
 				word-break: break-all;

@@ -25,7 +25,7 @@ const user = {
 		clockID: null, //计时器
 		clock: 0, //计时器
 	},
-	online: 0,
+	online: [], // 在线成员
 	connection: null, // WS 连接
 	username: "", // 用户名
 	permission: false, // 身份
@@ -245,6 +245,34 @@ const recvText = (message) => {
 	div.appendChild(p);
 	$("#chat-message").append(div);
 	$("#chat-message")[0].scrollTop = $("#chat-message")[0].scrollHeight;
+};
+
+// 更新在线成员
+const handleOnline = (onlineArr) => {
+	const memberList = $("#chat-member ul");
+	const memberCount = $("#chat-member ul ~ div");
+	const memberItem = memberList.children();
+	if (onlineArr.length - 10 > user.online.length) {
+		let list; // 每 10 组一次，防止短时间进入人数过多大量 DOM 操作
+		for (let i = 0; i < 10; i++) {
+			list += `<li class="mdui-ripple">${onlineArr[i]}</li>`;
+		}
+		memberList.append(list);
+	}
+	user.online = onlineArr;
+	memberCount.text("Online - " + onlineArr.length.toString() + " - Count");
+
+	let i;
+	for (i = 0; i < onlineArr.length; i++) {
+		memberItem[i].innerHTML = `<span class="mdui-chip-icon">${onlineArr[i].slice(
+			0,
+			1
+		)}</span><span class="mdui-chip-title">${onlineArr[i]}</span>`;
+		memberItem[i].hidden = false;
+	}
+	for (let j = i; j < memberItem.length; j++) {
+		memberItem[j].hidden = true;
+	}
 };
 
 // 处理开始课程的逻辑

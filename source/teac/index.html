@@ -61,7 +61,27 @@
 			</nav>
 
 			<article id="discus" class="mdui-container">
-				<section id="chat-member">
+				<section class="mdui-collapse" id="chat-member" mdui-collapse="options">
+					<div class="mdui-collapse-item">
+						<div class="mdui-collapse-item-header" title="在线成员">
+							<i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+						</div>
+						<div class="mdui-collapse-item-body">
+							<ul>
+								<li class="mdui-chip"></li>
+								<li class="mdui-chip"></li>
+								<li class="mdui-chip"></li>
+								<li class="mdui-chip"></li>
+								<li class="mdui-chip"></li>
+								<li class="mdui-chip"></li>
+								<li class="mdui-chip"></li>
+								<li class="mdui-chip"></li>
+								<li class="mdui-chip"></li>
+								<li class="mdui-chip"></li>
+							</ul>
+							<div>在线人数</div>
+						</div>
+					</div>
 				</section>
 				<section id="chat-message">
 				</section>
@@ -92,7 +112,7 @@
 						<label class="mdui-textfield-label">课程名</label>
 						<input class="mdui-textfield-input" id="course-input" type="text" title="填写课程名" />
 					</div>
-					<button class="mdui-btn mdui-ripple" title="完成" onclick="changeCourse(event)">
+					<button class="mdui-btn mdui-ripple" title="完成" onclick="changeCourse()">
 						<i class="mdui-icon material-icons">spellcheck</i>
 					</button>
 				</section>

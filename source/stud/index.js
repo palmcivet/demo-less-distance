@@ -54,9 +54,9 @@ const handler = (msg) => {
 	switch (message.type) {
 		case wsType.enter:
 			recvNotify(message, true);
+			handleOnline(message.online);
 			if (message.class) {
 				$("#present").hide();
-				user.online = message.online;
 				user.class.speaker = message.class.speaker;
 				user.class.courseName = message.class.course;
 				user.class.startTime = message.class.beginning;
@@ -71,7 +71,7 @@ const handler = (msg) => {
 			break;
 		case wsType.leave:
 			recvNotify(message, false);
-			user.online--;
+			handleOnline(message.online);
 			break;
 		case wsType.chat:
 			recvText(message);

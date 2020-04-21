@@ -29,54 +29,6 @@ $(() => {
 						store.currentScale = null;
 						store.pdfStorage = [];
 						gotoPage(1);
-						// 设置监听器
-						config.paintNode.addEventListener("mousedown", (event) => {
-							store.mouseDown = windowToCanvas(
-								event.clientX,
-								event.clientY
-							);
-							if (store.type === 5) {
-								config.proxyNode.value = null;
-								$("#textarea-proxy").css({
-									left: store.mouseDown.x,
-									top: store.mouseDown.y,
-								});
-							}
-							store.isModified = true;
-							store.dragging = true;
-							saveDrawingSurface();
-						});
-						config.paintNode.addEventListener("mousemove", (event) => {
-							let mouseMove = windowToCanvas(event.clientX, event.clientY);
-							if (store.type == 5) return;
-							if (
-								store.dragging &&
-								store.type !== 0 &&
-								(mouseMove.x <= config.paintNode.width ||
-									mouseMove.y <= config.paintNode.height)
-							) {
-								if (store.type < 5) {
-									config.paintNode.style["cursor"] = "crosshair";
-									restoreDrawingSurface();
-								}
-								toolBox[lineStyle[store.type]](mouseMove);
-							}
-						});
-						config.paintNode.addEventListener("mouseup", (event) => {
-							store.dragging = false;
-							if (store.type === 5) {
-								config.proxyNode.focus();
-							} else if (store.type !== 0) {
-								let mouseUp = windowToCanvas(
-									event.clientX,
-									event.clientY
-								);
-								store.drawingRing.do(
-									toolBox[lineStyle[store.type]],
-									mouseUp
-								);
-							}
-						});
 					},
 					() => {
 						sendInform("PDF 加载失败", "error");
@@ -92,19 +44,67 @@ $(() => {
 
 		// 生成工具栏
 		const ul = lineStyle.map((i, j) => `<li>${genIcon(j)}</li>`);
-		$("ul").append(ul);
+		$("aside > ul").append(ul);
 		for (let item = 0; item < lineStyle.length; item++) {
-			$("ul li")[item].onclick = () => changeType(item);
+			$("aside > ul > li")[item].onclick = () => changeType(item);
 			if (item === 0) {
 				changeType(0, true);
 			}
 		}
 
+		// 设置 Canvas 监听器
+		config.paintNode.addEventListener("mousedown", (event) => {
+			if ($("#present")[0].hidden) return;
+			store.mouseDown = windowToCanvas(event.clientX, event.clientY);
+			if (store.type === 5) {
+				config.proxyNode.value = null;
+				$("#textarea-proxy").css({
+					left: store.mouseDown.x,
+					top: store.mouseDown.y,
+				});
+			}
+			store.isModified = true;
+			store.dragging = true;
+			saveDrawingSurface();
+		});
+
+		config.paintNode.addEventListener("mousemove", (event) => {
+			if ($("#present")[0].hidden) return;
+			let mouseMove = windowToCanvas(event.clientX, event.clientY);
+			if (store.type == 5) return;
+			if (
+				store.dragging &&
+				store.type !== 0 &&
+				(mouseMove.x <= config.paintNode.width ||
+					mouseMove.y <= config.paintNode.height)
+			) {
+				if (store.type < 5) {
+					config.paintNode.style["cursor"] = "crosshair";
+					restoreDrawingSurface();
+				}
+				toolBox[lineStyle[store.type]](mouseMove);
+			}
+		});
+
+		config.paintNode.addEventListener("mouseup", (event) => {
+			if ($("#present")[0].hidden) return;
+			store.dragging = false;
+			if (store.type === 5) {
+				config.proxyNode.focus();
+			} else if (store.type !== 0) {
+				let mouseUp = windowToCanvas(event.clientX, event.clientY);
+				store.drawingRing.do(toolBox[lineStyle[store.type]], mouseUp);
+			}
+		});
+
 		// 文本工具的 textarea 代理
 		config.proxyNode.addEventListener("compositionstart", (e) => {
+			if ($("#present")[0].hidden) return;
 			e.target.inputStatus = "CHINESE_TYPING";
 		});
+
 		config.proxyNode.addEventListener("input", (e) => {
+			if ($("#present")[0].hidden) return;
 			if (e.target.inputStatus !== "CHINESE_TYPING") {
 				store.drawingRing.do(
 					toolBox[lineStyle[5]],
@@ -113,7 +113,9 @@ $(() => {
 				);
 			}
 		});
+
 		config.proxyNode.addEventListener("compositionend", (e) => {
+			if ($("#present")[0].hidden) return;
 			setTimeout(() => {
 				e.target.inputStatus = "CHINESE_TYPE_END";
 				store.drawingRing.do(
@@ -150,16 +152,17 @@ const updateColor = (jscolor) => {
 };
 
 // 更改课程名
-const changeCourse = (e) => {
+const changeCourse = () => {
+	const target = $("#function > section > button")[0];
 	if ($("#course-input")[0].disabled) {
 		$("#course-input")[0].disabled = false;
-		e.target.innerHTML = '<i class="mdui-icon material-icons">spellcheck</i>';
-		e.target.title = "完成";
+		target.innerHTML = '<i class="mdui-icon material-icons">spellcheck</i>';
+		target.title = "完成";
 		$("#course-input").focus();
 	} else {
 		$("#course-input")[0].disabled = true;
-		e.target.innerHTML = '<i class="mdui-icon material-icons">mode_edit</i>';
-		e.target.title = "更改";
+		target.innerHTML = '<i class="mdui-icon material-icons">mode_edit</i>';
+		target.title = "更改";
 		sendInform("课程名已更改", "info");
 	}
 };
@@ -231,12 +234,22 @@ const handler = (msg) => {
 	switch (message.type) {
 		case wsType.enter:
 			recvNotify(message, true);
+			// handleOnline(message.online);
+			handleOnline([
+				"teac-1",
+				"stu-1",
+				"stu-2",
+				"stu-3",
+				"stu-4",
+				"stu-5",
+				"stu-6",
+				"stu-7",
+			]);
 			if (message.class) {
 				if (message.class.speaker === user.username) {
 					user.class.speaker = message.class.speaker;
 					user.class.courseName = message.class.course;
 					user.class.startTime = message.class.beginning;
-					user.online = message.online;
 					sendInform("重连成功", "info");
 				} else {
 					location = "/source/stud/index.html";
@@ -245,7 +258,7 @@ const handler = (msg) => {
 			break;
 		case wsType.leave:
 			recvNotify(message, false);
-			user.online--;
+			handleOnline(message.online);
 			break;
 		case wsType.chat:
 			recvText(message);

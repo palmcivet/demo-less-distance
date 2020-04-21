@@ -79,3 +79,53 @@ main.main {
 		left: 15px;
 	}
 }
+
+section#chat-member {
+	z-index: 10;
+	position: absolute;
+	height: 30px;
+	left: 50%;
+	width: 100%;
+	transform: translateX(-50%);
+
+	& > div {
+		background-color: #f7f7f7;
+		border-bottom: solid 1px #d1cece;
+
+		& > div:first-child {
+			text-align: center;
+			cursor: pointer;
+		}
+
+		& > div:last-child {
+			border-bottom-left-radius: 5px;
+			border-bottom-right-radius: 5px;
+
+			ul {
+				margin: 0 auto;
+				padding: 5px 10px;
+				max-height: 200px;
+				overflow-y: auto;
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				align-content: center;
+				justify-content: center;
+				align-items: stretch;
+
+				& > li {
+					min-height: unset;
+					margin: 2px;
+					text-align: left;
+					list-style: none;
+					width: 45%;
+				}
+			}
+
+			& > div {
+				margin: 3px auto;
+				text-align: center;
+			}
+		}
+	}
+}
