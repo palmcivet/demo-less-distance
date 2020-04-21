@@ -234,17 +234,7 @@ const handler = (msg) => {
 	switch (message.type) {
 		case wsType.enter:
 			recvNotify(message, true);
-			// handleOnline(message.online);
-			handleOnline([
-				"teac-1",
-				"stu-1",
-				"stu-2",
-				"stu-3",
-				"stu-4",
-				"stu-5",
-				"stu-6",
-				"stu-7",
-			]);
+			handleOnline(message.online);
 			if (message.class) {
 				if (message.class.speaker === user.username) {
 					user.class.speaker = message.class.speaker;

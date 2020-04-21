@@ -250,7 +250,6 @@ const recvText = (message) => {
 // 更新在线成员
 const handleOnline = (onlineArr) => {
 	const memberList = $("#chat-member ul");
-	const memberCount = $("#chat-member ul ~ div");
 	const memberItem = memberList.children();
 	if (onlineArr.length - 10 > user.online.length) {
 		let list; // 每 10 组一次，防止短时间进入人数过多大量 DOM 操作
@@ -260,7 +259,7 @@ const handleOnline = (onlineArr) => {
 		memberList.append(list);
 	}
 	user.online = onlineArr;
-	memberCount.text("Online - " + onlineArr.length.toString() + " - Count");
+	$("#chat-member ul ~ div").eq(0).text("Online - " + onlineArr.length.toString() + " - Count");
 
 	let i;
 	for (i = 0; i < onlineArr.length; i++) {
