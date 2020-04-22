@@ -1,5 +1,7 @@
 $(() => {
-	initWebSocket(); // 获取信息、建立 WebSocket 连接
+	handleSignin(); // 获取信息
+	initWebSocket(); // 建立 WebSocket 连接
+	initAudioSocket(); // 建立 Audio 连接
 
 	if (null === (config.canvasNode = $("#canvas-node")[0])) {
 		sendInform("您的浏览器不支持 Canvas，请使用 Firefox 或 Chrome", "warn");
@@ -137,13 +139,6 @@ $(() => {
 	}
 });
 
-// 跳转到
-const jumpTo = (e) => {
-	if (e.keyCode === 13) {
-		turnPage(parseInt(e.target.value));
-	}
-};
-
 // 更改前景色
 const updateColor = (jscolor) => {
 	$("#picker").css({
@@ -151,81 +146,7 @@ const updateColor = (jscolor) => {
 	});
 };
 
-// 更改课程名
-const changeCourse = () => {
-	const target = $("#function > section > button")[0];
-	if ($("#course-input")[0].disabled) {
-		$("#course-input")[0].disabled = false;
-		target.innerHTML = '<i class="mdui-icon material-icons">spellcheck</i>';
-		target.title = "完成";
-		$("#course-input").focus();
-	} else {
-		$("#course-input")[0].disabled = true;
-		target.innerHTML = '<i class="mdui-icon material-icons">mode_edit</i>';
-		target.title = "更改";
-		sendInform("课程名已更改", "info");
-	}
-};
-
-// 开始、结束课程
-const toggleCourse = (e) => {
-	if (!user.class.isInClass) {
-		let course = $("#course-input").val();
-		if (!course) {
-			sendInform("请填写课程名", "warn");
-			$("#course-input").focus();
-			return;
-		} else if (!store.pdfContent) {
-			sendInform("请加载一份演示文稿", "warn");
-			return;
-		} else {
-			sendText({
-				type: wsType.begin,
-				speaker: user.username,
-				course,
-				width: config.canvasNode.width,
-				height: config.canvasNode.height,
-				slide: config.canvasNode.toDataURL("image/png"),
-				note: config.paintNode.toDataURL("image/png"),
-			});
-
-			// 开始上课，同时打开录音
-			// startTime 字段在收到 begin 消息填写，使用服务器时间
-			user.class.isInClass = !user.class.isInClass;
-			user.class.isRecord = !user.class.isRecord;
-			user.class.speaker = user.username;
-			user.class.courseName = course;
-		}
-	} else {
-		sendText({
-			type: wsType.finish,
-			speaker: user.username,
-		});
-		clearPaint();
-		user.class.isInClass = false;
-		user.class.isRecord = false;
-	}
-	$("#toggleCourse")[0].innerHTML = user.class.isInClass
-		? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_power</i>结束课程'
-		: '<i class="mdui-icon material-icons">power_settings_new</i>开始课程';
-	$("#toggleRecord")[0].innerHTML = user.class.isRecord
-		? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_voice</i>暂停录音'
-		: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
-};
-
-// 暂停、继续录音
-const toggleRecord = (e) => {
-	if (user.class.isInClass) {
-		// TODO WebRTC
-		user.class.isRecord = !user.class.isRecord;
-		$("#toggleRecord")[0].innerHTML = user.class.isRecord
-			? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_voice</i>暂停录音'
-			: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
-	} else {
-		sendInform("当前未开课", "info");
-	}
-};
-
+// 消息处理函数
 const handler = (msg) => {
 	message = JSON.parse(msg.data);
 	// DEV

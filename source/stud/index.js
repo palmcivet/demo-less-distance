@@ -9,7 +9,8 @@ const config = {
 };
 
 $(() => {
-	initWebSocket(); // 获取信息、建立 WebSocket 连接
+	handleSignin(); // 获取信息
+	initWebSocket(); // 建立 WebSocket 连接
 
 	if (null === (config.canvasNode = $("#canvas-node")[0])) {
 		alert("您的浏览器不支持 Canvas");
@@ -186,4 +187,5 @@ ul, ol {
 		time.getSeconds() +
 		".html";
 	proxy.click();
+	window.URL.revokeObjectURL(exportBlob);
 };

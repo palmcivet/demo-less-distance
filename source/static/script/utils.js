@@ -27,6 +27,7 @@ const user = {
 	},
 	online: [], // 在线成员
 	connection: null, // WS 连接
+	audio: null, // 语音连接
 	username: "", // 用户名
 	permission: false, // 身份
 };
@@ -114,7 +115,7 @@ class Socket {
 
 	sendMessage = (data) => {
 		if (this.ws) {
-			this.ws.send(JSON.stringify(data));
+			this.ws.send(data);
 		}
 	};
 
@@ -170,7 +171,11 @@ const sendText = (msg) => {
 	if (user.connection.ws) {
 		// DEV 测试发送数据
 		console.log(msg);
-		user.connection.sendMessage(msg);
+		if (msg instanceof Object) {
+			user.connection.sendMessage(JSON.stringify(msg));
+		} else {
+			user.audio.sendMessage(msg);
+		}
 	} else {
 		sendInform("已掉线，正在帮您重连", "error");
 		user.connection.connect();
@@ -259,7 +264,9 @@ const handleOnline = (onlineArr) => {
 		memberList.append(list);
 	}
 	user.online = onlineArr;
-	$("#chat-member ul ~ div").eq(0).text("Online - " + onlineArr.length.toString() + " - Count");
+	$("#chat-member ul ~ div")
+		.eq(0)
+		.text("Online - " + onlineArr.length.toString() + " - Count");
 
 	let i;
 	for (i = 0; i < onlineArr.length; i++) {
@@ -319,7 +326,7 @@ const handleFinish = (message) => {
 	user.class.clock = 0;
 };
 
-/* =============== 以下处理登录登出 =============== */
+/* =============== 以下为处理登入、登出 =============== */
 
 const handleSignin = () => {
 	user.username = localStorage.getItem("username") || "Developer-Stu"; // DEV 调试名称
@@ -335,9 +342,8 @@ const handleSignout = () => {
 
 /* =============== 以下为初始化 =============== */
 
-// 获取信息、建立 WebSocket 连接
+// 建立 WebSocket 连接
 const initWebSocket = () => {
-	handleSignin();
 	const ws = {
 		socketOnOpen: () =>
 			sendText({
@@ -355,6 +361,27 @@ const initWebSocket = () => {
 
 	user.connection = new Socket(ws);
 	user.connection.connect();
+};
+
+// 建立语音连接
+const initAudioSocket = () => {
+	const ws = {
+		socketOnOpen: () =>
+			sendText({
+				type: wsType.enter,
+				name: user.username,
+				role: user.permission,
+			}),
+		socketOnClose: () => sendInform("您退出频道", "info"),
+		socketOnMessage: (msg) => handler(msg),
+		socketOnError: (e) => {
+			console.log(e);
+		},
+		socketUrl: "wss://www.uiofield.top/lessDistance/voice",
+	};
+
+	user.audio = new Socket(ws);
+	user.audio.connect();
 };
 
 // 监听聊天框发送方式的切换
