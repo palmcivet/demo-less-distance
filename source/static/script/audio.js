@@ -15,7 +15,7 @@ class SAudioData {
 	};
 
 	// 清理缓冲区
-	clearData = function () {
+	clearData = () => {
 		this.size = 0;
 		this.buffer = [];
 	};
@@ -88,9 +88,9 @@ class SAudioData {
 		writeString("data"); // 数据标识符
 		offset += 4;
 		data.setUint32(offset, dataLength, true); // 采样数据总数，即数据总大小-44
-        offset += 4;
+		offset += 4;
 
-        // 写入数据
+		// 写入数据
 		if (sampleBits === 8) {
 			for (var i = 0; i < bytes.length; i++, offset++) {
 				var s = Math.max(-1, Math.min(1, bytes[i]));
@@ -103,7 +103,7 @@ class SAudioData {
 				var s = Math.max(-1, Math.min(1, bytes[i]));
 				data.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
 			}
-        }
+		}
 
 		return data;
 		//  return new Blob([data], { type: "audio/wav" });
@@ -129,11 +129,11 @@ class SRecorder {
 	}
 
 	// 开始录音
-	start = function (callback = null) {
+	start = (callback = null) => {
 		this.audioInput.connect(this.audioVolume);
 		this.audioVolume.connect(this.recorder);
 		this.recorder.connect(this.audioContext.destination);
-		callback && this.cycle(callback);
+		callback && this.cycle((data) => callback(data));
 	};
 
 	// 停止录音
@@ -153,23 +153,13 @@ class SRecorder {
 	};
 
 	// 循环拉取缓冲数据，使用 `callback()` 发送出去，该方法适用于流
-	cycle = function (callback) {
-		callback && callback(this.getWav());
+	cycle = (callback, time = 500) => {
+		let bTime = new Date();
+		callback(this.getWav());
 		this.clear();
-		this.clock = setTimeout(this.cycle, 500);
+		this.clock = setTimeout(
+			() => this.cycle((data) => callback(data), time),
+			time - (new Date() - bTime)
+		);
 	};
 }
-
-var gRecorder = null;
-var ws = new WebSocket("wss://www.uiofield.top/lessDistance/voice");
-
-ws.onmessage = function (e) {
-	document.querySelector("audio").src = window.URL.createObjectURL(e.data);
-};
-
-navigator.mediaDevices
-	.getUserMedia({ audio: true, video: false })
-	.then((stream) => {
-		gRecorder = new SRecorder(stream);
-	})
-	.catch((error) => console.log(error));

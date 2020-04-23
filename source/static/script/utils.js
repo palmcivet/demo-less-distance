@@ -19,15 +19,16 @@ const user = {
 	class: {
 		isInClass: false, // 是否正在上课
 		isRecord: false, // 是否正在录音
+		audio: null, // 录音机对象
 		speaker: "",
 		courseName: "", // 课程名
 		startTime: "", // 开始时间
-		clockID: null, //计时器
-		clock: 0, //计时器
+		clockID: null, //计时器 ID
+		clock: 0, //计时器时间
 	},
 	online: [], // 在线成员
-	connection: null, // WS 连接
-	audio: null, // 语音连接
+	chatConnect: null, // WS 连接
+	audioConnect: null, // 语音连接
 	username: "", // 用户名
 	permission: false, // 身份
 };
@@ -78,7 +79,6 @@ class Socket {
 		let { socketOnOpen } = this.param;
 		socketOnOpen && socketOnOpen();
 		this.isSucces = false; // 连接成功将标识符改为 false
-		console.log("WebSocket Open");
 	};
 
 	onClose = () => {
@@ -140,6 +140,68 @@ class Socket {
 	}
 }
 
+/* =============== 以下为初始化 =============== */
+
+// 建立 WebSocket 连接
+const initWebSocket = () => {
+	// 建立常规连接
+	const chatWs = {
+		socketOnOpen: () =>
+			sendText({
+				type: wsType.enter,
+				name: user.username,
+				role: user.permission,
+			}),
+		socketOnClose: () => sendInform("您已离开教室", "info"),
+		socketOnMessage: (msg) => handler(msg),
+		socketOnError: (e) => {
+			console.error(e);
+		},
+		socketUrl: "ws://101.132.100.188:8080/lessDistance/websocket",
+	};
+	user.chatConnect = new Socket(chatWs);
+	user.chatConnect.connect();
+
+	// 建立语音连接
+	const audioWs = {
+		socketOnOpen: () => sendInform("您已进入语音", "info"),
+		socketOnClose: () => sendInform("您已退出语音", "info"),
+		socketOnMessage: (e) => {
+			if (user.class.speaker !== user.username) {
+				let context = user.class.audio;
+				context.decodeAudioData(e.data).then((buffer) => {
+					source = context.createBufferSource();
+					source.buffer = buffer;
+					source.connect(context.destination);
+					source.start(0);
+				});
+			}
+		},
+		socketOnError: (e) => {
+			console.error(e);
+		},
+		socketUrl: "wss://www.uiofield.top/lessDistance/voice",
+	};
+	user.audioConnect = new Socket(audioWs);
+	user.audioConnect.connect();
+	user.audioConnect.ws.binaryType = "arraybuffer";
+};
+
+// 监听聊天框发送方式的切换
+const listenChatBox = () => {
+	$("#chat-box textarea")[0].addEventListener("keydown", (e) => {
+		if (e.keyCode === 13) {
+			if (e.shiftKey && e.target.placeholder === "Shift + Enter 发送") {
+				e.preventDefault();
+				textSubmit();
+			} else if (!e.shiftKey && e.target.placeholder === "Enter 发送") {
+				e.preventDefault();
+				textSubmit();
+			}
+		}
+	});
+};
+
 /* =============== 以下为公共函数 =============== */
 
 // 发送系统通知
@@ -168,17 +230,21 @@ function sendInform(msg, type, time = 2000, pos = { top: "10%", left: "10%" }) {
 
 // 发送 WS 信息
 const sendText = (msg) => {
-	if (user.connection.ws) {
-		// DEV 测试发送数据
-		console.log(msg);
-		if (msg instanceof Object) {
-			user.connection.sendMessage(JSON.stringify(msg));
-		} else {
-			user.audio.sendMessage(msg);
-		}
+	if (user.chatConnect.ws) {
+		user.chatConnect.sendMessage(JSON.stringify(msg));
 	} else {
 		sendInform("已掉线，正在帮您重连", "error");
-		user.connection.connect();
+		user.chatConnect.connect();
+		setTimeout(() => sendText(msg), 2000);
+	}
+};
+
+const sendVoice = (data) => {
+	if (user.audioConnect.ws) {
+		user.audioConnect.sendMessage(data);
+	} else {
+		sendInform("已掉线，正在帮您重连", "error");
+		user.audioConnect.connect();
 		setTimeout(() => sendText(msg), 2000);
 	}
 };
@@ -329,7 +395,7 @@ const handleFinish = (message) => {
 /* =============== 以下为处理登入、登出 =============== */
 
 const handleSignin = () => {
-	user.username = localStorage.getItem("username") || "Developer-Stu"; // DEV 调试名称
+	user.username = localStorage.getItem("username");
 	user.permission = localStorage.getItem("permission") === "true" ? true : false;
 	$(".mdui-chip-title")[0].innerHTML = user.username;
 };
@@ -338,63 +404,4 @@ const handleSignout = () => {
 	localStorage.removeItem("username");
 	localStorage.removeItem("permission");
 	location = "/source/auth/signin.html";
-};
-
-/* =============== 以下为初始化 =============== */
-
-// 建立 WebSocket 连接
-const initWebSocket = () => {
-	const ws = {
-		socketOnOpen: () =>
-			sendText({
-				type: wsType.enter,
-				name: user.username,
-				role: user.permission,
-			}),
-		socketOnClose: () => sendInform("您已离开教室", "info"),
-		socketOnMessage: (msg) => handler(msg),
-		socketOnError: (e) => {
-			console.log(e);
-		},
-		socketUrl: "ws://101.132.100.188:8080/lessDistance/websocket",
-	};
-
-	user.connection = new Socket(ws);
-	user.connection.connect();
-};
-
-// 建立语音连接
-const initAudioSocket = () => {
-	const ws = {
-		socketOnOpen: () =>
-			sendText({
-				type: wsType.enter,
-				name: user.username,
-				role: user.permission,
-			}),
-		socketOnClose: () => sendInform("您退出频道", "info"),
-		socketOnMessage: (msg) => handler(msg),
-		socketOnError: (e) => {
-			console.log(e);
-		},
-		socketUrl: "wss://www.uiofield.top/lessDistance/voice",
-	};
-
-	user.audio = new Socket(ws);
-	user.audio.connect();
-};
-
-// 监听聊天框发送方式的切换
-const listenChatBox = () => {
-	$("#chat-box textarea")[0].addEventListener("keydown", (e) => {
-		if (e.keyCode === 13) {
-			if (e.shiftKey && e.target.placeholder === "Shift + Enter 发送") {
-				e.preventDefault();
-				textSubmit();
-			} else if (!e.shiftKey && e.target.placeholder === "Enter 发送") {
-				e.preventDefault();
-				textSubmit();
-			}
-		}
-	});
 };

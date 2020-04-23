@@ -1,7 +1,19 @@
+const config = {
+	libSrc: "/source/static/script/pdf.worker.min.js",
+	pdfURL: "", // 路径|ArrayBuffer
+	canvasNode: null, // canvas 节点，通过 ID 获取
+	canvasCtx: null, // canvas 的 context
+	paintNode: null, // paint 节点，通过 ID 获取
+	paintCtx: null, // paint 的 context
+	proxyNode: $("#textarea-proxy")[0], // 文本工具的 textarea 代理
+	imageNode: $("#img-proxy")[0], // 标注的 img 代理
+	pickerNode: $("#picker")[0], // 拾色器
+	jumpNode: $("#jump")[0], // 跳转输入框
+};
+
 $(() => {
 	handleSignin(); // 获取信息
 	initWebSocket(); // 建立 WebSocket 连接
-	initAudioSocket(); // 建立 Audio 连接
 
 	if (null === (config.canvasNode = $("#canvas-node")[0])) {
 		sendInform("您的浏览器不支持 Canvas，请使用 Firefox 或 Chrome", "warn");
@@ -149,8 +161,6 @@ const updateColor = (jscolor) => {
 // 消息处理函数
 const handler = (msg) => {
 	message = JSON.parse(msg.data);
-	// DEV
-	console.log("recv", message);
 
 	switch (message.type) {
 		case wsType.enter:

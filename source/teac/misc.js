@@ -9,19 +9,6 @@ const lineStyle = [
 	"eraser",
 ];
 
-const config = {
-	libSrc: "/source/static/script/pdf.worker.min.js",
-	pdfURL: "", // 路径|ArrayBuffer
-	canvasNode: null, // canvas 节点，通过 ID 获取
-	canvasCtx: null, // canvas 的 context
-	paintNode: null, // paint 节点，通过 ID 获取
-	paintCtx: null, // paint 的 context
-	proxyNode: $("#textarea-proxy")[0], // 文本工具的 textarea 代理
-	imageNode: $("#img-proxy")[0], // 标注的 img 代理
-	pickerNode: $("#picker")[0], // 拾色器
-	jumpNode: $("#jump")[0], // 跳转输入框
-};
-
 const store = {
 	pdfContent: null, // `getDocument()` 返回的值
 	pdfPageNum: 0, // PDF 页数
@@ -392,6 +379,21 @@ const changeColor = (color) => {
 
 /* =============== 以下为课程相关 =============== */
 
+// 初始化录音设备
+const initAudio = () => {
+	if (!navigator.mediaDevices) {
+		sendInform("您的浏览器不支持语音，请使用 Firefox 或 Chrome", "error");
+		return;
+	}
+
+	return navigator.mediaDevices
+		.getUserMedia({ audio: true, video: false })
+		.then((stream) => {
+			user.class.audio = new SRecorder(stream);
+		})
+		.catch(() => sendInform("初始化设备失败，请刷新重试","error"));
+};
+
 // 更改课程名
 const changeCourse = () => {
 	const target = $("#function > section > button")[0];
@@ -409,7 +411,7 @@ const changeCourse = () => {
 };
 
 // 开始、结束课程
-const toggleCourse = (e) => {
+const toggleCourse = () => {
 	if (!user.class.isInClass) {
 		let course = $("#course-input").val();
 		if (!course) {
@@ -431,9 +433,10 @@ const toggleCourse = (e) => {
 			});
 
 			// 开始上课，同时打开录音
+			initAudio().then(() => toggleRecord(true));
+
 			// startTime 字段在收到 begin 消息填写，使用服务器时间
-			user.class.isInClass = !user.class.isInClass;
-			user.class.isRecord = !user.class.isRecord;
+			user.class.isInClass = true;
 			user.class.speaker = user.username;
 			user.class.courseName = course;
 		}
@@ -443,26 +446,47 @@ const toggleCourse = (e) => {
 			speaker: user.username,
 		});
 		clearPaint();
+		toggleRecord(false);
 		user.class.isInClass = false;
-		user.class.isRecord = false;
 	}
+
 	$("#toggleCourse")[0].innerHTML = user.class.isInClass
 		? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_power</i>结束课程'
 		: '<i class="mdui-icon material-icons">power_settings_new</i>开始课程';
-	$("#toggleRecord")[0].innerHTML = user.class.isRecord
-		? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_voice</i>暂停录音'
-		: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
 };
 
 // 暂停、继续录音
-const toggleRecord = (e) => {
-	if (user.class.isInClass) {
-		// TODO WebRTC
-		user.class.isRecord = !user.class.isRecord;
-		$("#toggleRecord")[0].innerHTML = user.class.isRecord
-			? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_voice</i>暂停录音'
-			: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
-	} else {
-		sendInform("当前未开课", "info");
+const toggleRecord = (flag = null) => {
+	switch (flag) {
+		case null:
+			if (!user.class.isInClass) {
+				sendInform("当前未开课", "info");
+				return;
+			} else {
+				if (user.class.isRecord) {
+					user.class.audio.stop();
+				} else {
+					user.class.audio.start((data) => sendVoice(data));
+				}
+			}
+			break;
+		case true:
+			user.class.audio.start((data) => sendVoice(data));
+			// user.class.audio.start();
+			break;
+		case false:
+			user.class.audio.stop();
+			user.class.isRecord = false;
+			$(
+				"#toggleRecord"
+			)[0].innerHTML = `<i class="mdui-icon material-icons">keyboard_voice</i> 开始录音`;
+
+			return;
 	}
+
+	user.class.isRecord = !user.class.isRecord;
+
+	$("#toggleRecord")[0].innerHTML = user.class.isRecord
+		? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_voice</i>暂停录音'
+		: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
 };

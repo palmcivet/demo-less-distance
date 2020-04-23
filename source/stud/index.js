@@ -50,7 +50,6 @@ $(() => {
 
 const handler = (msg) => {
 	message = JSON.parse(msg.data);
-	console.log(message);
 
 	switch (message.type) {
 		case wsType.enter:
@@ -85,6 +84,7 @@ const handler = (msg) => {
 			config.noteNode.height = message.height;
 			config.slideNode.src = message.slide;
 			config.noteNode.src = message.note;
+			user.class.audio = new AudioContext();
 			break;
 		case wsType.finish:
 			config.slideNode.src = "";
