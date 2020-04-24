@@ -73,7 +73,7 @@
                         }),
                         success: function (data) {
                             if (data.code === 13) {
-                                location = "/auth/signin.html";
+                                location = "/lessDistance/auth/signin.html";
                                 sendInform("注册成功，请前去登陆", "warn");
                             } else {
                                 sendInform(data.message, "warn");

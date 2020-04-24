@@ -164,7 +164,7 @@ const initWebSocket = () => {
 
 	// 建立语音连接
 	const audioWs = {
-		socketOnOpen: () => sendInform("您已进入语音", "info"),
+		socketOnOpen: () => {},
 		socketOnClose: () => sendInform("您已退出语音", "info"),
 		socketOnMessage: (e) => {
 			if (user.class.speaker !== user.username) {
@@ -403,5 +403,5 @@ const handleSignin = () => {
 const handleSignout = () => {
 	localStorage.removeItem("username");
 	localStorage.removeItem("permission");
-	location = "/source/auth/signin.html";
+	location = "/lessDistance/auth/signin.html";
 };

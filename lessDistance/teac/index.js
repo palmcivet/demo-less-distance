@@ -173,7 +173,7 @@ const handler = (msg) => {
 					user.class.startTime = message.class.beginning;
 					sendInform("重连成功", "info");
 				} else {
-					location = "/source/stud/index.html";
+					location = "/lessDistance/stud/index.html";
 				}
 			}
 			break;
@@ -189,8 +189,8 @@ const handler = (msg) => {
 			break;
 		case wsType.finish:
 			handleFinish(message);
-			if (location === "/source/stud/index.html") {
-				location = "/source/teac/index.html";
+			if (location === "/lessDistance/stud/index.html") {
+				location = "/lessDistance/teac/index.html";
 			}
 			break;
 		default:
