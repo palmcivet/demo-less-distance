@@ -70,10 +70,11 @@
 								permission: $("input[name='usertype']:checked").val(),
 							}),
 							success: function (data) {
-								if (data.code === 12) {
-									localStorage.setItem(data.info.name);
-									localStorage.setItem(data.info.permission);
-									if (data.info.permission === true) {
+								if (data.code === 1) {
+									localStorage.setItem("username", data.info.name);
+									localStorage.setItem("permission", data.info.permission);
+
+									if (data.info.permission) {
 										location = "/lessDistance/teac/index.html";
 									} else {
 										location = "/lessDistance/stud/index.html";

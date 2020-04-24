@@ -175,22 +175,17 @@ ul, ol {
 </body>
 </html>`;
 
-	let exportBlob = new Blob([html]);
-	let blobUrl = window.URL.createObjectURL(exportBlob);
-	let proxy = $("#download")[0];
-	proxy.href = blobUrl;
 	let time = new Date();
-
-	proxy.download =
+	saveFile(
+		new Blob([html], { type: "text/plain" }),
 		"笔记_" +
-		time.getMonth() +
-		"月" +
-		time.getDate() +
-		"日_" +
-		time.getHours() +
-		"_" +
-		time.getSeconds() +
-		".html";
-	proxy.click();
-	window.URL.revokeObjectURL(exportBlob);
+			time.getMonth() +
+			"月" +
+			time.getDate() +
+			"日_" +
+			time.getHours() +
+			"_" +
+			time.getSeconds() +
+			".html"
+	);
 };

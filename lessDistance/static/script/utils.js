@@ -228,6 +228,15 @@ function sendInform(msg, type, time = 2000, pos = { top: "10%", left: "10%" }) {
 	return setTimeout(() => $("#notify-box").children()[0].remove(), time);
 }
 
+const saveFile = (blob, name) => {
+	let blobUrl = window.URL.createObjectURL(blob);
+	let proxy = $("a#download")[0];
+	proxy.href = blobUrl;
+	proxy.download = name;
+	proxy.click();
+	window.URL.revokeObjectURL(exportBlob);
+};
+
 // 发送 WS 信息
 const sendText = (msg) => {
 	if (user.chatConnect.ws) {
@@ -382,6 +391,10 @@ const handleFinish = (message) => {
         <span class="k">开始于</span><span class="v">${message.beginning}</span>
         <span class="k">课程时长</span><span class="v">${message.duration}</span>`;
 
+	if (user.username === message.speaker) {
+		setTimeout(() => handleReport(message.info), 2000);
+	}
+
 	// 收尾
 	user.class.isInClass = false;
 	user.class.isRecord = false;
@@ -390,6 +403,65 @@ const handleFinish = (message) => {
 	user.class.startTime = "";
 	user.class.clockID = null;
 	user.class.clock = 0;
+};
+
+const handleReport = (arr) => {
+	// DEV
+	arr = [
+		{
+			name: "stu_2",
+			count: 3,
+			answer: ["ans-1", "ans-2"],
+		},
+		{
+			name: "stu_1",
+			count: 3,
+			answer: ["ans-1", "ans-2"],
+		},
+		{
+			name: "stu_1",
+			count: 3,
+			answer: ["ans-1", "ans-2","sdf-s"],
+		},
+		{
+			name: "stu_1",
+			count: 3,
+			answer: ["ans-1", "ans-2"],
+		},
+		{
+			name: "stu_3",
+			count: 5,
+			answer: ["ans-1", "ans-2"],
+		},
+	];
+
+	let res = `姓名,互动次数,讨论题回答
+`;
+	arr.forEach((item) => {
+		res = res + item.name + ",";
+		res = res + item.count + ",";
+		for (let ans = 0, l = item.answer.length; ans < l; ans++) {
+			res = res + item.answer[ans] + ",";
+		}
+		// 模板字符串换行
+		res += `
+`;
+	});
+
+	let time = new Date();
+
+	saveFile(
+		new Blob([res], { type: "text/plain" }),
+		"课程记录_" +
+			time.getMonth() +
+			"月" +
+			time.getDate() +
+			"日_" +
+			time.getHours() +
+			"_" +
+			time.getSeconds() +
+			".csv"
+	);
 };
 
 /* =============== 以下为处理登入、登出 =============== */

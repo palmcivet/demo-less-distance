@@ -91,15 +91,34 @@ type：
             "speaker": "123456",
         }
         ```
-    - 后端
+    - 后端。除教师外广播
         ```json
         {
             "type": "finish",
             "speaker": "123456",
             "beginning": "2020/4/13 10:07:43",    // 开始时间
             "duration": "00:43:03",    // 持续时间
-            "slide": "",
-            "note": ""
+        }
+        ```
+    - 后端。教师单播
+        ```json
+        {
+            "type": "finish",
+            "speaker": "123456",
+            "beginning": "2020/4/13 10:07:43",    // 开始时间
+            "duration": "00:43:03",    // 持续时间
+            "info": [
+                {
+                    "name": "stu-1",
+                    "count": 3,
+                    "answer": ["ans-1", "ans-2" ]
+                },
+                {
+                    "name": "stu-1",
+                    "count": 3,
+                    "answer": ["ans-1", "ans-2" ]
+                }
+            ]
         }
         ```
 - [x] *slide*：翻页。**直接广播**
@@ -118,4 +137,29 @@ type：
     }
     ```
     若来源不是当前 `speaker`，则不转发
-- [ ] record：开关录音。WebRTC
+- [ ] *ques*：讨论题-问题。
+    - 前端。来自教师端
+        ```json
+        {
+            "tyoe": "ques",
+            "question": "这是一个题目",
+            "answer": "这是一个答案",
+            "time": 120	// 预留作答时间，秒
+        }
+        ```
+    - 后端。除老师外广播
+        ```json
+        {
+            "type": "ques",
+            "question": "这是一个问题",
+            "time": 58 // 花费的作答时间，秒
+        }
+        ```
+- [ ] *answer*：讨论题-回答。**前端发送**
+    ```json
+    {
+        "type": "answer",
+        "name": "stu-a",
+        "answer": "这是一个答案"
+    }
+    ```
