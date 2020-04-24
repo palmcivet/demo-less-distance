@@ -45,7 +45,6 @@
     <script>
         function signup(e = null) {
             const rootUrl = "https://www.uiofield.top/lessDistance";
-            // const rootUrl = "http://101.132.100.188:8080/lessDistance";
             if (e === null || e.keyCode === 13) {
                 if ($("input[name='usertype']:checked").val() === undefined) {
                     sendInform("请选择用户类型", "warn");

@@ -287,7 +287,6 @@ const asyncNote = (data = null) => {
 // 上传课件
 const uploadPdf = () => {
 	store.pdfContent.getData().then((res) => {
-		console.log(res);
 		return res;
 	}); // Uint8Array
 };
@@ -391,7 +390,7 @@ const initAudio = () => {
 		.then((stream) => {
 			user.class.audio = new SRecorder(stream);
 		})
-		.catch(() => sendInform("初始化设备失败，请刷新重试","error"));
+		.catch(() => sendInform("初始化设备失败，请刷新重试", "error"));
 };
 
 // 更改课程名
@@ -466,13 +465,12 @@ const toggleRecord = (flag = null) => {
 				if (user.class.isRecord) {
 					user.class.audio.stop();
 				} else {
-					user.class.audio.start((data) => sendVoice(data));
+					user.class.audio.continue((data) => sendVoice(data));
 				}
 			}
 			break;
 		case true:
 			user.class.audio.start((data) => sendVoice(data));
-			// user.class.audio.start();
 			break;
 		case false:
 			user.class.audio.stop();

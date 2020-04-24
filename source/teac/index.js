@@ -194,8 +194,6 @@ const handler = (msg) => {
 			}
 			break;
 		default:
-			// DEV
-			console.log("未捕获：" + message);
 			break;
 	}
 };

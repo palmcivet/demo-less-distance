@@ -66,6 +66,8 @@ const handler = (msg) => {
 				config.slideNode.height = message.class.height;
 				config.noteNode.width = message.class.width;
 				config.noteNode.height = message.class.height;
+				user.class.audio = new AudioContext();
+				config.noteNode.setAttribute("style", "opacity: unset");
 				sendInform("欢迎进入课堂", "info");
 			}
 			break;
@@ -85,8 +87,10 @@ const handler = (msg) => {
 			config.slideNode.src = message.slide;
 			config.noteNode.src = message.note;
 			user.class.audio = new AudioContext();
+			config.noteNode.setAttribute("style", "opacity: unset");
 			break;
 		case wsType.finish:
+			config.noteNode.setAttribute("style", "opacity: 0");
 			config.slideNode.src = "";
 			config.noteNode.src = "";
 			handleFinish(message);
@@ -94,6 +98,7 @@ const handler = (msg) => {
 		case wsType.slide:
 			config.slideNode.src = message.slide;
 			config.noteNode.src = "";
+			config.noteNode.setAttribute("style", "opacity: 0");
 			break;
 		case wsType.note:
 			config.noteNode.src = message.note;

@@ -137,18 +137,30 @@ class SRecorder {
 	};
 
 	// 停止录音
-	stop = function () {
+	stop = () => {
 		this.recorder.disconnect();
 		clearTimeout(this.clock);
 	};
 
+	// 暂停录音
+	pause = () => {
+		this.audioVolume.disconnect();
+		clearTimeout(this.clock);
+	};
+
+	// 继续录音
+	continue = (callback = null) => {
+		this.recorder.connect(this.audioContext.destination);
+		callback && this.cycle((data) => callback(data));
+	};
+
 	// 获取 WAV 数据
-	getWav = function () {
+	getWav = () => {
 		return this.audioData.encodeWAV();
 	};
 
 	// 清除缓冲区
-	clear = function () {
+	clear = () => {
 		this.audioData.clearData();
 	};
 

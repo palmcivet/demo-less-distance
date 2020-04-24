@@ -157,7 +157,7 @@ const initWebSocket = () => {
 		socketOnError: (e) => {
 			console.error(e);
 		},
-		socketUrl: "ws://101.132.100.188:8080/lessDistance/websocket",
+		socketUrl: "wss://www.uiofield.top/lessDistance/websocket",
 	};
 	user.chatConnect = new Socket(chatWs);
 	user.chatConnect.connect();
