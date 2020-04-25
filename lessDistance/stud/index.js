@@ -103,6 +103,22 @@ const handler = (msg) => {
 		case wsType.note:
 			config.noteNode.src = message.note;
 			break;
+		case wsType.ques:
+			$("#Q-A").show();
+			$("#Q-A").children().eq(0).text(message.ques);
+			user.class.rTime = Date.now();
+			setTimeout(
+				() => (user.class.other = handleClock(Date.now() + message.time * 60000)),
+				30000
+			); // 0.5 分钟读题
+			break;
+		case wsType.answ:
+			$("#Q-A").children().eq(1).val(message.answ);
+			$("#Q-A").children().eq(2).hide();
+			$("#Q-A").children().eq(3).hide();
+			$("#Q-A").children().eq(4).show();
+			user.class.other = setTimeout(() => handleConfirm(), 150000); // 默认 2.5 分钟
+			break;
 		default:
 			break;
 	}
@@ -188,4 +204,48 @@ ul, ol {
 			time.getSeconds() +
 			".html"
 	);
+};
+
+// 提交回答
+const handleSubmit = (answ = "") => {
+	if (!answ && !(answ = $("#Q-A").children().eq(1).val())) {
+		sendInform("请作答", "info");
+	} else {
+		sendText({
+			type: wsType.answ,
+			answ,
+			time: Math.floor((Date.now() - user.class.rTime) / 1000),
+		});
+	}
+	clearInterval(user.class.other); // 此处为答题倒计时
+};
+
+// 确认关闭
+const handleConfirm = () => {
+	clearInterval(user.class.other);
+	$("#Q-A").hide();
+	$("#Q-A").children().eq(0).val("");
+	$("#Q-A").children().eq(1).val("");
+	$("#Q-A").children().eq(2).show();
+	$("#Q-A").children().eq(3).show();
+	$("#Q-A").children().eq(4).hide();
+};
+
+const handleClock = (time) => {
+	user.class.other = setTimeout(() => {
+		$("#Q-A")
+			.children()
+			.eq(2)
+			.text(
+				`剩余时间 ${("0" + Math.floor(time / 3600).toString()).slice(-2)}:${(
+					"0" + Math.floor(time / 60).toString()
+				).slice(-2)}:${("0" + Math.floor(time % 60).toString()).slice(-2)}`
+			);
+		if (Date.now() - time === 0) {
+			clearInterval(user.class.other);
+			handleSubmit(" ");
+		} else {
+			handleClock(time);
+		}
+	}, 1000);
 };

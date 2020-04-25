@@ -120,7 +120,7 @@
 					</button>
 				</section>
 
-				<section class="mdui-btn mdui-ripple mdui-color-deep-purple-a400">
+				<section class="mdui-btn mdui-ripple mdui-color-orange-a200 mdui-text-color-white-text">
 					<label for="load" title="加载课件">
 						<i class="mdui-icon material-icons">library_books</i> 加载课件
 					</label>
@@ -132,15 +132,29 @@
 					<span>00</span> : <span>00</span> : <span>00</span>
 				</section>
 
-				<section>
-					<button class="mdui-btn mdui-ripple mdui-col-xs-6" title="开始课程" onclick="toggleCourse()"
-						id="toggleCourse">
+				<section class="mdui-col-xs-12">
+					<button
+						class="mdui-btn mdui-ripple mdui-col-xs-6 mdui-color-light-green-500 mdui-text-color-white-text"
+						title="开始课程" onclick="toggleCourse()" id="toggleCourse">
 						<i class="mdui-icon material-icons">power_settings_new</i> 开始课程
 					</button>
-					<button class="mdui-btn mdui-ripple mdui-col-xs-6" title="开始录音" onclick="toggleRecord()"
-						id="toggleRecord">
+					<button class="mdui-btn mdui-ripple mdui-col-xs-6 mdui-color-purple-a400" title="开始录音"
+						onclick="toggleRecord()" id="toggleRecord">
 						<i class="mdui-icon material-icons">keyboard_voice</i> 开始录音
 					</button>
+				</section>
+
+				<section class="mdui-col-xs-12">
+					<textarea placeholder="编辑题目" rows="10" id="question"></textarea>
+					<textarea placeholder="编辑答案" rows="5" id="answer"></textarea>
+					<input placeholder="预留时间 分钟" type="number" id="time"></input>
+					<button class="mdui-btn mdui-ripple mdui-color-light-blue-a700 mdui-text-color-white-text"
+						title="发布题目后，预留时间内不得再次发布" onclick="postTopic()">
+						<i class="mdui-icon material-icons">new_releases</i> 发布题目
+					</button>
+				</section>
+
+				<section class="mdui-col-xs-12">
 					<button class="mdui-btn mdui-ripple mdui-col-xs-6" title="上传课件">
 						<i class="mdui-icon material-icons">cloud_upload</i> 上传课件
 					</button>

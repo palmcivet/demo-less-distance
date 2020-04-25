@@ -488,3 +488,20 @@ const toggleRecord = (flag = null) => {
 		? '<i class="mdui-icon material-icons mdui-text-color-red-a400">settings_voice</i>暂停录音'
 		: '<i class="mdui-icon material-icons">keyboard_voice</i>继续录音';
 };
+
+// 发布讨论题
+const postTopic = () => {
+	if ("" === (ques = $("#question").val())) {
+		sendInform("请填写问题", "info");
+	} else if ("" === (answ = $("#answer").val())) {
+		sendInform("请填写答案", "info");
+	} else if ("" === (time = $("#time").val())) {
+		sendInform("请预留时间", "info");
+	} else {
+		sendText({ type: wsType.ques, ques, answ, time: parseInt(time) });
+	}
+
+	$("#time ~ button")[0].disabled = "true";
+	setTimeout(() => ($("#time ~ button")[0].disabled = ""), time + 18000); // 3 分钟为学生回顾校对时间
+	$("#time").val("");
+};

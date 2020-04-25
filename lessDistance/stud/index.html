@@ -16,11 +16,18 @@
 		<audio id="audio"></audio>
 		<a id="download"></a>
 		<article>
-			<h1 id="courseName"></h1>
+			<h1 id="course-name"></h1>
 			<section>
 				<div id="clock">
 					<p><i class="mdui-icon material-icons">free_breakfast</i> 当前未开课</p>
 					<span>00</span> : <span>00</span> : <span>00</span>
+				</div>
+				<div id="Q-A" style="display: none;">
+					<div></div>
+					<textarea placeholder="我的回答"></textarea>
+					<span></span>
+					<button class="mdui-btn mdui-ripple" onclick="handleSubmit()">提交回答</button>
+					<button class="mdui-btn mdui-ripple confirm" onclick="handleConfirm()">关闭</button>
 				</div>
 				<header id="present">
 					<div>

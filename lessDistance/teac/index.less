@@ -145,6 +145,7 @@ main.main > aside {
 	article {
 		@pad: 15px;
 		height: calc(100vh - 50px - 2 * @pad);
+		min-height: 680px;
 		margin-top: 50px + @pad;
 		margin-bottom: @pad;
 		min-width: 300px;
@@ -152,7 +153,10 @@ main.main > aside {
 	}
 
 	article#function {
+		position: relative;
+
 		& > section:first-child {
+			margin: 10px;
 			display: flex;
 			justify-content: space-between;
 			align-items: flex-end;
@@ -176,10 +180,8 @@ main.main > aside {
 			}
 		}
 
-		& > section {
+		& > section:nth-child(2) {
 			margin: 10px;
-			position: relative;
-			display: block;
 
 			& > label {
 				left: 50%;
@@ -192,6 +194,40 @@ main.main > aside {
 			& > input#load {
 				visibility: hidden;
 			}
+		}
+
+		& > section:nth-child(5) {
+			margin: 20px 0;
+
+			& > textarea,
+			& > input {
+				border: dashed 2px rgb(182, 182, 182);
+				border-radius: 2px;
+				width: 100%;
+				resize: none;
+				padding: 8px;
+				margin: 5px 0;
+			}
+
+			& > textarea:first-child {
+				height: 100px;
+			}
+
+			& > textarea:nth-child(2) {
+				height: 50px;
+			}
+
+			& > button {
+				left: 50%;
+				width: 100%;
+				margin-top: 20px;
+				transform: translateX(-50%);
+			}
+		}
+
+		& > section:last-child {
+			position: absolute;
+			bottom: 2%;
 		}
 
 		button {

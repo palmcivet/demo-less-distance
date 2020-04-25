@@ -12,7 +12,8 @@ const wsType = {
 	finish: "finish",
 	slide: "slide",
 	note: "note",
-	record: "record",
+	ques: "ques",
+	answ: "answ",
 };
 
 const user = {
@@ -25,6 +26,8 @@ const user = {
 		startTime: "", // 开始时间
 		clockID: null, //计时器 ID
 		clock: 0, //计时器时间
+		rTime: 0, // 收到题目的时间
+		other: null, // 其他全局变量
 	},
 	online: [], // 在线成员
 	chatConnect: null, // WS 连接
@@ -421,7 +424,7 @@ const handleReport = (arr) => {
 		{
 			name: "stu_1",
 			count: 3,
-			answer: ["ans-1", "ans-2","sdf-s"],
+			answer: ["ans-1", "ans-2", "sdf-s"],
 		},
 		{
 			name: "stu_1",
