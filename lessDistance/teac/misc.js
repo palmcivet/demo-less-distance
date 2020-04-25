@@ -434,7 +434,6 @@ const toggleCourse = () => {
 			// 开始上课，同时打开录音
 			initAudio().then(() => toggleRecord(true));
 
-			// startTime 字段在收到 begin 消息填写，使用服务器时间
 			user.class.isInClass = true;
 			user.class.speaker = user.username;
 			user.class.courseName = course;

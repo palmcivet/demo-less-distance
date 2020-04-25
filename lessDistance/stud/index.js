@@ -49,6 +49,7 @@ $(() => {
 });
 
 const handler = (msg) => {
+	console.log(msg);
 	message = JSON.parse(msg.data);
 
 	switch (message.type) {
@@ -57,17 +58,8 @@ const handler = (msg) => {
 			handleOnline(message.online);
 			if (message.class) {
 				$("#present").hide();
-				user.class.speaker = message.class.speaker;
-				user.class.courseName = message.class.course;
-				user.class.startTime = message.class.beginning;
-				config.slideNode.src = message.class.slide;
-				config.noteNode.src = message.class.note;
-				config.slideNode.width = message.class.width;
-				config.slideNode.height = message.class.height;
-				config.noteNode.width = message.class.width;
-				config.noteNode.height = message.class.height;
+				handleBegin(message.class);
 				user.class.audio = new AudioContext();
-				config.noteNode.setAttribute("style", "opacity: unset");
 				sendInform("欢迎进入课堂", "info");
 			}
 			break;
@@ -80,14 +72,8 @@ const handler = (msg) => {
 			break;
 		case wsType.begin:
 			handleBegin(message);
-			config.slideNode.width = message.width;
-			config.slideNode.height = message.height;
-			config.noteNode.width = message.width;
-			config.noteNode.height = message.height;
-			config.slideNode.src = message.slide;
-			config.noteNode.src = message.note;
 			user.class.audio = new AudioContext();
-			config.noteNode.setAttribute("style", "opacity: unset");
+			sendInform("欢迎进入课堂", "info");
 			break;
 		case wsType.finish:
 			config.noteNode.setAttribute("style", "opacity: 0");
@@ -102,22 +88,22 @@ const handler = (msg) => {
 			break;
 		case wsType.note:
 			config.noteNode.src = message.note;
+			config.noteNode.setAttribute("style", "opacity: unset");
 			break;
 		case wsType.ques:
 			$("#Q-A").show();
 			$("#Q-A").children().eq(0).text(message.ques);
-			user.class.rTime = Date.now();
-			setTimeout(
-				() => (user.class.other = handleClock(Date.now() + message.time * 60000)),
-				30000
-			); // 0.5 分钟读题
+			// 20 秒读题
+			user.class.qaID = handleClock(
+				(user.class.qaTime = Math.floor((message.time * 60000 + 30000) / 1000))
+			);
 			break;
 		case wsType.answ:
 			$("#Q-A").children().eq(1).val(message.answ);
 			$("#Q-A").children().eq(2).hide();
 			$("#Q-A").children().eq(3).hide();
 			$("#Q-A").children().eq(4).show();
-			user.class.other = setTimeout(() => handleConfirm(), 150000); // 默认 2.5 分钟
+			user.class.qaID = setTimeout(() => handleConfirm(), 120000); // 2 分钟回顾
 			break;
 		default:
 			break;
@@ -125,7 +111,7 @@ const handler = (msg) => {
 };
 
 // 保存笔记
-const saveNote = (e) => {
+const saveNote = () => {
 	if ("<p><br></p>" === (note = config.editorNode.txt.html())) {
 		sendInform("笔记为空，无需保存", "info");
 		return;
@@ -208,21 +194,21 @@ ul, ol {
 
 // 提交回答
 const handleSubmit = (answ = "") => {
+	clearInterval(user.class.qaID);
 	if (!answ && !(answ = $("#Q-A").children().eq(1).val())) {
 		sendInform("请作答", "info");
 	} else {
 		sendText({
 			type: wsType.answ,
 			answ,
-			time: Math.floor((Date.now() - user.class.rTime) / 1000),
+			time: user.class.qaTime,
 		});
 	}
-	clearInterval(user.class.other); // 此处为答题倒计时
 };
 
 // 确认关闭
 const handleConfirm = () => {
-	clearInterval(user.class.other);
+	clearInterval(user.class.qaID);
 	$("#Q-A").hide();
 	$("#Q-A").children().eq(0).val("");
 	$("#Q-A").children().eq(1).val("");
@@ -231,21 +217,25 @@ const handleConfirm = () => {
 	$("#Q-A").children().eq(4).hide();
 };
 
-const handleClock = (time) => {
-	user.class.other = setTimeout(() => {
+// 问答题倒计定时器
+const handleClock = () => {
+	user.class.qaID = setTimeout(() => {
+		let resTime = --user.class.qaTime;
+		console.log(resTime);
+
 		$("#Q-A")
 			.children()
 			.eq(2)
 			.text(
-				`剩余时间 ${("0" + Math.floor(time / 3600).toString()).slice(-2)}:${(
-					"0" + Math.floor(time / 60).toString()
-				).slice(-2)}:${("0" + Math.floor(time % 60).toString()).slice(-2)}`
+				`剩余时间 ${("0" + Math.floor(resTime / 3600).toString()).slice(-2)}:${(
+					"0" + Math.floor(resTime / 60).toString()
+				).slice(-2)}:${("0" + (resTime % 60).toString()).slice(-2)}`
 			);
-		if (Date.now() - time === 0) {
-			clearInterval(user.class.other);
+		if (resTime <= 0) {
+			clearInterval(user.class.qaID);
 			handleSubmit(" ");
 		} else {
-			handleClock(time);
+			handleClock();
 		}
 	}, 1000);
 };

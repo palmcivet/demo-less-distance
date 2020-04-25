@@ -23,11 +23,10 @@ const user = {
 		audio: null, // 录音机对象
 		speaker: "",
 		courseName: "", // 课程名
-		startTime: "", // 开始时间
-		clockID: null, //计时器 ID
 		clock: 0, //计时器时间
-		rTime: 0, // 收到题目的时间
-		other: null, // 其他全局变量
+		clockID: null, //计时器 ID
+		qaTime: 0, // 问答计时器的时间
+		qaID: null, // 问答计时器 ID
 	},
 	online: [], // 在线成员
 	chatConnect: null, // WS 连接
@@ -72,7 +71,7 @@ class Socket {
 				if (this.ws && this.ws.readyState !== 1) {
 					this.ws.onclose();
 					console.warn("Connection Timeout");
-					clearTimeout(time);
+					cleaqaTimeout(time);
 				}
 			}, this.timeout);
 		}
@@ -359,23 +358,34 @@ const handleOnline = (onlineArr) => {
 	}
 };
 
-// 处理开始课程的逻辑
+// 学生端处理开始课程的逻辑
 const handleBegin = (message) => {
 	$("#present").hide();
 	$(
 		"#clock"
 	).children()[0].innerHTML = `<i class="mdui-icon material-icons">access_alarm</i> 课程已进行`;
+	config.slideNode.width = message.width;
+	config.slideNode.height = message.height;
+	config.noteNode.width = message.width;
+	config.noteNode.height = message.height;
+	config.slideNode.src = message.slide;
+	config.noteNode.src = message.note;
+	config.noteNode.setAttribute("style", "opacity: unset");
 	user.class.speaker = message.speaker;
 	user.class.courseName = message.course;
-	user.class.startTime = message.beginning;
-	user.class.clockID = setInterval(() => {
+	user.class.clock = Math.floor((new Date() - Date.parse(message.beginning)) / 1000);
+	user.class.clockID = setClock(user.class.clock);
+};
+
+// 处理上课计时的表
+const setClock = () =>
+	setInterval(() => {
 		let time = ++user.class.clock;
 		let clock = $("#clock").children();
 		clock[1].innerText = ("0" + Math.floor(time / 3600).toString()).slice(-2);
 		clock[2].innerText = ("0" + Math.floor(time / 60).toString()).slice(-2);
 		clock[3].innerText = ("0" + Math.floor(time % 60).toString()).slice(-2);
 	}, 1000);
-};
 
 // 处理结束课程的逻辑
 const handleFinish = (message) => {
@@ -403,41 +413,12 @@ const handleFinish = (message) => {
 	user.class.isRecord = false;
 	user.class.speaker = "";
 	user.class.courseName = "";
-	user.class.startTime = "";
 	user.class.clockID = null;
 	user.class.clock = 0;
 };
 
+// 生成报告
 const handleReport = (arr) => {
-	// DEV
-	arr = [
-		{
-			name: "stu_2",
-			count: 3,
-			answer: ["ans-1", "ans-2"],
-		},
-		{
-			name: "stu_1",
-			count: 3,
-			answer: ["ans-1", "ans-2"],
-		},
-		{
-			name: "stu_1",
-			count: 3,
-			answer: ["ans-1", "ans-2", "sdf-s"],
-		},
-		{
-			name: "stu_1",
-			count: 3,
-			answer: ["ans-1", "ans-2"],
-		},
-		{
-			name: "stu_3",
-			count: 5,
-			answer: ["ans-1", "ans-2"],
-		},
-	];
-
 	let res = `姓名,互动次数,讨论题回答
 `;
 	arr.forEach((item) => {

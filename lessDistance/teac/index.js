@@ -170,7 +170,6 @@ const handler = (msg) => {
 				if (message.class.speaker === user.username) {
 					user.class.speaker = message.class.speaker;
 					user.class.courseName = message.class.course;
-					user.class.startTime = message.class.beginning;
 					sendInform("重连成功", "info");
 				} else {
 					location = "/lessDistance/stud/index.html";
@@ -185,7 +184,12 @@ const handler = (msg) => {
 			recvText(message);
 			break;
 		case wsType.begin:
-			handleBegin(message);
+			user.class.speaker = message.speaker;
+			user.class.courseName = message.course;
+			user.class.clock = Math.floor(
+				(new Date() - Date.parse(message.beginning)) / 1000
+			);
+			user.class.clockID = setClock(message.beginning);
 			break;
 		case wsType.finish:
 			handleFinish(message);
