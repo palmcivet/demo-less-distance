@@ -404,9 +404,7 @@ const handleFinish = (message) => {
         <span class="k">开始于</span><span class="v">${message.beginning}</span>
         <span class="k">课程时长</span><span class="v">${message.duration}</span>`;
 
-	if (user.username === message.speaker) {
-		setTimeout(() => handleReport(message.info), 2000);
-	}
+	if (user.username === message.speaker) handleReport(message.info);
 
 	// 收尾
 	user.class.isInClass = false;
@@ -419,7 +417,7 @@ const handleFinish = (message) => {
 
 // 生成报告
 const handleReport = (arr) => {
-	let res = `姓名,互动次数,讨论题回答
+	let res = `姓名,互动次数,讨论题回答,
 `;
 	arr.forEach((item) => {
 		res = res + item.name + ",";

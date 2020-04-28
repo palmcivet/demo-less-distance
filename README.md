@@ -1,6 +1,23 @@
 [toc]
 
-## 接口
+## HTTP 接口
+- 方法：GET
+- URL：`interface/getvideo`
+- 返回：
+
+```json
+{
+    "code": 12,
+    "message": "请求成功",
+    "info": {
+        "id": 1,
+        "name": "Spring",
+        "path": "/lessDistance/video/83993344-1-208.mp4"
+    }
+}
+```
+
+## WS 接口
 登陆成功建立 WebSocket 连接
 
 type：

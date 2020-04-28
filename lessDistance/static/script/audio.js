@@ -9,7 +9,7 @@ class SAudioData {
 	}
 
 	// 填入缓冲区
-	inputData = function (data) {
+	inputData = (data) => {
 		this.buffer.push(new Float32Array(data));
 		this.size += data.length;
 	};
@@ -21,7 +21,7 @@ class SAudioData {
 	};
 
 	// 合并压缩
-	compress = function () {
+	compress = () => {
 		var data = new Float32Array(this.size);
 		var offset = 0;
 		for (var i = 0; i < this.buffer.length; i++) {
@@ -46,7 +46,7 @@ class SAudioData {
 	 * 编码为 WAV
 	 * @returns {ArrayBuffer}
 	 */
-	encodeWAV = function () {
+	encodeWAV = () => {
 		var sampleRate = Math.min(this.inputSampleRate, this.outputSampleRate);
 		var sampleBits = Math.min(this.inputSampleBits, this.outputSampleBits);
 		var bytes = this.compress();

@@ -199,7 +199,7 @@ function gotoPage(page) {
 
 	setTimeout(() => {
 		if (user.class.isInClass) asyncSlide();
-	}, 180);
+	}, 250);
 	store.drawingRing.clear();
 
 	// 加载笔记
@@ -433,6 +433,7 @@ const toggleCourse = () => {
 
 			// 开始上课，同时打开录音
 			initAudio().then(() => toggleRecord(true));
+			$("#present").hide();
 
 			user.class.isInClass = true;
 			user.class.speaker = user.username;

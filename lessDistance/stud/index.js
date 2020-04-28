@@ -1,8 +1,4 @@
 const config = {
-	canvasNode: null, // canvas 节点，通过 ID 获取
-	canvasCtx: null, // canvas 的 context
-	paintNode: null, // paint 节点，通过 ID 获取
-	paintCtx: null, // paint 的 context
 	slideNode: $("#slide-proxy")[0], // slide 的 img 代理
 	noteNode: $("#note-proxy")[0], // 标注的 img 代理
 	editorNode: null, // 笔记节点
@@ -11,45 +7,44 @@ const config = {
 $(() => {
 	handleSignin(); // 获取信息
 	initWebSocket(); // 建立 WebSocket 连接
+	listenChatBox(); // 监听聊天框发送方式的切换
 
-	if (null === (config.canvasNode = $("#canvas-node")[0])) {
-		alert("您的浏览器不支持 Canvas");
-		return;
-	} else {
-		listenChatBox(); // 监听聊天框发送方式的切换
+	// 初始化富文本编辑器
+	let E = window.wangEditor;
+	let editor;
+	config.editorNode = editor = new E("#editor");
 
-		// 初始化富文本编辑器
-		let E = window.wangEditor;
-		let editor;
-		config.editorNode = editor = new E("#editor");
+	editor.customConfig.pasteIgnoreImg = false;
+	editor.customConfig.pasteFilterStyle = false;
+	editor.customConfig.uploadImgShowBase64 = true;
+	editor.customConfig.menus = [
+		"undo", // 撤销
+		"redo", // 重复
+		"bold", // 粗体
+		"italic", // 斜体
+		"underline", // 下划线
+		"strikeThrough", // 删除线
+		"quote", // 引用
+		"table", // 表格
+		"head", // 标题
+		"fontSize", // 字号
+		"foreColor", // 文字颜色
+		"justify", // 对齐方式
+		"list", // 列表
+		"code", // 插入代码
+		"video", // 插入视频
+		"link", // 插入链接
+	];
+	editor.create();
 
-		editor.customConfig.pasteIgnoreImg = false;
-		editor.customConfig.pasteFilterStyle = false;
-		editor.customConfig.uploadImgShowBase64 = true;
-		editor.customConfig.menus = [
-			"undo", // 撤销
-			"redo", // 重复
-			"bold", // 粗体
-			"italic", // 斜体
-			"underline", // 下划线
-			"strikeThrough", // 删除线
-			"quote", // 引用
-			"table", // 表格
-			"head", // 标题
-			"fontSize", // 字号
-			"foreColor", // 文字颜色
-			"justify", // 对齐方式
-			"list", // 列表
-			"code", // 插入代码
-			"video", // 插入视频
-			"link", // 插入链接
-		];
-		editor.create();
-	}
+	// 重播退出按钮
+	$("#playback > button").on("click", () => {
+		$("#playback > video")[0].pause();
+		$("#playback").hide();
+	});
 });
 
 const handler = (msg) => {
-	console.log(msg);
 	message = JSON.parse(msg.data);
 
 	switch (message.type) {
@@ -80,6 +75,7 @@ const handler = (msg) => {
 			config.slideNode.src = "";
 			config.noteNode.src = "";
 			handleFinish(message);
+			handlePlayback();
 			break;
 		case wsType.slide:
 			config.slideNode.src = message.slide;
@@ -221,7 +217,6 @@ const handleConfirm = () => {
 const handleClock = () => {
 	user.class.qaID = setTimeout(() => {
 		let resTime = --user.class.qaTime;
-		console.log(resTime);
 
 		$("#Q-A")
 			.children()
@@ -238,4 +233,32 @@ const handleClock = () => {
 			handleClock();
 		}
 	}, 1000);
+};
+
+// 回放
+const handlePlayback = () => {
+	$.ajax({
+		method: "GET",
+		url: "/lessDistance/interface/getvideo",
+		xhrFields: {
+			withCredentials: true,
+		},
+		success: function (data) {
+			if (data.code === 12) {
+				$("#playback > video")[0].src = data.info.path;
+				$("#present > div")
+					.children()
+					.eq(0)
+					.on("click", () => {
+						$("#playback").show();
+					});
+			} else {
+				sendInform(data.message, "error");
+			}
+		},
+		err: (error) => {
+			console.error(error);
+			sendInform("网络失败", "error");
+		},
+	});
 };
