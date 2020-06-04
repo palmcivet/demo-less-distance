@@ -10,9 +10,6 @@
 
 # production
 /public
-/design
-design.md
-interface.md
 /.github/*
 /**/lib/*
 /test/*
