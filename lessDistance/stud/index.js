@@ -252,6 +252,7 @@ const handlePlayback = () => {
 					.on("click", () => {
 						$("#playback").show();
 					});
+				$("#present > div > h1").addClass("hover");
 			} else {
 				sendInform(data.message, "error");
 			}

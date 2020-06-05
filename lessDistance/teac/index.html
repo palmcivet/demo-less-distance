@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="zh">
 
 <head>
@@ -120,9 +121,16 @@
 					</button>
 				</section>
 
-				<section class="mdui-btn mdui-ripple mdui-color-orange-a200 mdui-text-color-white-text">
-					<label for="load" title="加载课件">
-						<i class="mdui-icon material-icons">library_books</i> 加载课件
+				<section class="mdui-btn mdui-ripple mdui-color-orange-a400 mdui-text-color-white-text">
+					<label for="upload" title="上传 PPTX 格式的幻灯片，系统将帮您转换成 PDF 并且分发">
+						<i class="mdui-icon material-icons">cloud_upload</i> 上传幻灯片（PPTX）
+					</label>
+					<input id="upload" type="file" accept=".ppt,.pptx" />
+				</section>
+
+				<section class="mdui-btn mdui-ripple mdui-color-amber-a400 mdui-text-color-white-text">
+					<label for="load" title="加载本地 PDF 格式的课件">
+						<i class="mdui-icon material-icons">library_books</i> 加载演示课件（PDF）
 					</label>
 					<input id="load" type="file" accept=".pdf" />
 				</section>
@@ -134,7 +142,7 @@
 
 				<section class="mdui-col-xs-12">
 					<button
-						class="mdui-btn mdui-ripple mdui-col-xs-6 mdui-color-light-green-500 mdui-text-color-white-text"
+						class="mdui-btn mdui-ripple mdui-col-xs-6 mdui-color-light-green-600 mdui-text-color-white-text"
 						title="开始课程" onclick="toggleCourse()" id="toggleCourse">
 						<i class="mdui-icon material-icons">power_settings_new</i> 开始课程
 					</button>
@@ -151,15 +159,6 @@
 					<button class="mdui-btn mdui-ripple mdui-color-light-blue-a700 mdui-text-color-white-text"
 						title="发布题目后，预留时间内不得再次发布" onclick="postTopic()">
 						<i class="mdui-icon material-icons">new_releases</i> 发布题目
-					</button>
-				</section>
-
-				<section class="mdui-col-xs-12">
-					<button class="mdui-btn mdui-ripple mdui-col-xs-6" title="上传课件">
-						<i class="mdui-icon material-icons">cloud_upload</i> 上传课件
-					</button>
-					<button class="mdui-btn mdui-ripple mdui-col-xs-6" title="下载批注">
-						<i class="mdui-icon material-icons">cloud_download</i> 下载批注
 					</button>
 				</section>
 			</article>

@@ -1,5 +1,5 @@
 const config = {
-	libSrc: "/source/static/script/pdf.worker.min.js",
+	libSrc: "/lessDistance/static/script/pdf.worker.min.js",
 	pdfURL: "", // 路径|ArrayBuffer
 	canvasNode: null, // canvas 节点，通过 ID 获取
 	canvasCtx: null, // canvas 的 context
@@ -25,34 +25,24 @@ $(() => {
 		config.paintCtx = config.paintNode.getContext("2d");
 		config.paintNode.fillStyle = "rgba(255, 255, 255, 0)";
 
+		// 初始化历史记录栈
 		store.drawingRing = new canvasRing(config.canvasNode);
 
 		// 加载 PDF 的监听及回调
 		pdfjsLib.workerSrc = config.libSrc;
-		$("#load")[0].addEventListener("change", () => {
-			clearPaint(); // 清除上节课内容
+		const $upload = $("#upload")[0];
+		$upload.addEventListener("change", () => {
+			uploadPdf($upload.files[0]);
+			if (!$("#course-input")[0].disabled) {
+				changeCourse(getFileName($upload.files[0].name));
+			}
+		});
 
-			let fr = new FileReader();
-			fr.readAsArrayBuffer($("#load")[0].files[0]);
-			fr.onload = () => {
-				pdfjsLib.getDocument((config.pdfURL = fr.result)).promise.then(
-					(pdf) => {
-						// 设置元信息并打开首页
-						store.pdfContent = pdf;
-						store.pdfPageNum = store.pdfContent._pdfInfo.numPages;
-						store.currentScale = null;
-						store.pdfStorage = [];
-						gotoPage(1);
-					},
-					() => {
-						sendInform("PDF 加载失败", "error");
-					}
-				);
-			};
-			$("#present").hide();
-			// 更改缺省课程名
-			if (!$("#course-input").val()) {
-				$("#course-input").val($("#load")[0].files[0].name.slice(0, -4));
+		const $load = $("#load")[0];
+		$load.addEventListener("change", () => {
+			loadPdf($load.files[0]);
+			if (!$("#course-input")[0].disabled) {
+				changeCourse(getFileName($load.files[0].name));
 			}
 		});
 
@@ -66,7 +56,7 @@ $(() => {
 			}
 		}
 
-		// 设置 Canvas 监听器
+		/* 设置 Canvas 监听器 */
 		config.paintNode.addEventListener("mousedown", (event) => {
 			if ($("#present")[0].hidden) return;
 			store.mouseDown = windowToCanvas(event.clientX, event.clientY);
@@ -111,7 +101,7 @@ $(() => {
 			}
 		});
 
-		// 文本工具的 textarea 代理
+		/* 文本工具的 textarea 代理 */
 		config.proxyNode.addEventListener("compositionstart", (e) => {
 			if ($("#present")[0].hidden) return;
 			e.target.inputStatus = "CHINESE_TYPING";
@@ -200,4 +190,50 @@ const handler = (msg) => {
 		default:
 			break;
 	}
+};
+
+// 加载本地 PDF
+const loadPdf = (file) => {
+	// 清除上节课内容
+	clearPaint();
+	// 读取文件
+	let fr = new FileReader();
+	fr.readAsArrayBuffer(file);
+	fr.onload = () => {
+		pdfjsLib.getDocument((config.pdfURL = fr.result)).promise.then(
+			(pdf) => {
+				// 设置元信息并打开首页
+				store.pdfContent = pdf;
+				store.pdfPageNum = store.pdfContent._pdfInfo.numPages;
+				store.currentScale = null;
+				store.pdfStorage = [];
+				gotoPage(1);
+			},
+			() => {
+				sendInform("加载失败，请重试或加载 PDF", "error");
+			}
+		);
+	};
+	$("#present").hide();
+};
+
+// 上传课件
+const uploadPdf = (file) => {
+	const url = "https://www.uiofield.top/lessDistance" + "/interface/upload";
+	const formData = new FormData();
+	formData.append("name", file.name);
+	formData.append("file", file);
+
+	fetch(url, {
+		method: "POST",
+		body: formData,
+	})
+		.then((response) => {
+			response.blob();
+			let pdf = new Blob([blob], { type: "application/pdf" });
+			loadPdf(pdf);
+		})
+		.then(() => sendInform("上传成功", "info"))
+		.catch(() => sendInform("上传失败，请重试或加载 PDF", "error"));
+	sendInform("正在上传处理，请稍等", "info");
 };

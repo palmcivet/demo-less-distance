@@ -395,9 +395,10 @@ function sendInform(msg, type, time = 2000, pos = { top: "10%", left: "10%" }) {
 			p.setAttribute("class", "error");
 			p.innerHTML = `<i class="mdui-icon material-icons">error</i>  ${msg}`;
 			break;
-		default:
+		case "info":
 			p.setAttribute("class", "info");
 			p.innerHTML = `<i class="mdui-icon material-icons">notifications</i> ${msg}`;
+		default:
 			break;
 	}
 	$("#notify-box")[0].append(p);
@@ -405,6 +406,7 @@ function sendInform(msg, type, time = 2000, pos = { top: "10%", left: "10%" }) {
 	return setTimeout(() => $("#notify-box").children()[0].remove(), time);
 }
 
+// 保存文件
 const saveFile = (blob, name) => {
 	let blobUrl = window.URL.createObjectURL(blob);
 	let proxy = $("a#download")[0];
@@ -425,6 +427,7 @@ const sendText = (msg) => {
 	}
 };
 
+// 发送语音
 const sendVoice = (data) => {
 	if (user.audioConnect.ws) {
 		user.audioConnect.sendMessage(data);
@@ -506,14 +509,14 @@ const recvText = (message) => {
 
 // 更新在线成员
 const handleOnline = (onlineArr) => {
-	const memberList = $("#chat-member ul");
-	const memberItem = memberList.children();
+	const $memberList = $("#chat-member ul");
+	const memberItem = $memberList.children();
 	if (onlineArr.length - 10 > user.online.length) {
 		let list; // 每 10 组一次，防止短时间进入人数过多大量 DOM 操作
 		for (let i = 0; i < 10; i++) {
 			list += `<li class="mdui-ripple">${onlineArr[i]}</li>`;
 		}
-		memberList.append(list);
+		$memberList.append(list);
 	}
 	user.online = onlineArr;
 	$("#chat-member ul ~ div")
@@ -539,6 +542,14 @@ const handleBegin = (message) => {
 	$(
 		"#clock"
 	).children()[0].innerHTML = `<i class="mdui-icon material-icons">access_alarm</i> 课程已进行`;
+	$("#course-name").val(message.class.course);
+	$("#course-name").on("click", () => {
+		let proxy = $("a#download")[0];
+		proxy.href = message.class.file;
+		proxy.download = name;
+		proxy.click();
+		$("#course-name").addClass("hover");
+	});
 	config.slideNode.width = message.width;
 	config.slideNode.height = message.height;
 	config.noteNode.width = message.width;
@@ -556,10 +567,10 @@ const handleBegin = (message) => {
 const setClock = () =>
 	setInterval(() => {
 		let time = ++user.class.clock;
-		let clock = $("#clock").children();
-		clock[1].innerText = ("0" + Math.floor(time / 3600).toString()).slice(-2);
-		clock[2].innerText = ("0" + Math.floor(time / 60).toString()).slice(-2);
-		clock[3].innerText = ("0" + Math.floor(time % 60).toString()).slice(-2);
+		let $clock = $("#clock").children();
+		$clock[1].innerText = ("0" + Math.floor(time / 3600).toString()).slice(-2);
+		$clock[2].innerText = ("0" + Math.floor(time / 60).toString()).slice(-2);
+		$clock[3].innerText = ("0" + Math.floor(time % 60).toString()).slice(-2);
 	}, 1000);
 
 // 处理结束课程的逻辑
@@ -621,14 +632,22 @@ const handleReport = (arr) => {
 	);
 };
 
+// 获取文件名（不带扩展名）
+const getFileName = (filename) => {
+	let pos = filename.lastIndexOf(".");
+	return filename.substring(0, pos);
+};
+
 /* =============== 以下为处理登入、登出 =============== */
 
+// 登录后获取信息
 const handleSignin = () => {
 	user.username = localStorage.getItem("username");
 	user.permission = localStorage.getItem("permission") === "true" ? true : false;
 	$(".mdui-chip-title")[0].innerHTML = user.username;
 };
 
+// 注销登录后抹除信息
 const handleSignout = () => {
 	localStorage.removeItem("username");
 	localStorage.removeItem("permission");

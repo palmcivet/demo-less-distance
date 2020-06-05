@@ -11,11 +11,23 @@
 </head>
 
 <body>
+	<style>
+		/* 动态样式，Less 编译不便插入 */
+		h1.hover {
+			cursor: pointer;
+
+		}
+
+		h1.hover:hover {
+			color: rgb(67, 86, 194);
+		}
+	</style>
 	<main class="main">
-		<div id="notify-box"> </div>
+		<div id="notify-box"></div>
 		<audio id="audio"></audio>
 		<a id="download"></a>
 		<article>
+			<h1 id="course-name"></h1>
 			<section>
 				<div id="playback">
 					<button class="mdui-btn mdui-btn-icon mdui-ripple" title="关闭">

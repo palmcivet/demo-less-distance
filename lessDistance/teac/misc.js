@@ -15,7 +15,7 @@ const store = {
 	pdfStorage: [], // 保存每一页标注
 	currentPage: 1, // 当前页
 	currentScale: null, // 缩放比例
-	// 绘图
+	/* 绘图 */
 	isModified: false, // 是否修改过，该字段为节省存储
 	drawingRing: null, // 历史记录栈
 	drawingSurface: null, // 保存绘图表面
@@ -284,13 +284,6 @@ const asyncNote = (data = null) => {
 	});
 };
 
-// 上传课件
-const uploadPdf = () => {
-	store.pdfContent.getData().then((res) => {
-		return res;
-	}); // Uint8Array
-};
-
 /* =============== 以下为 Canvas 操作 =============== */
 
 // 清除 paintNode Canvas
@@ -394,18 +387,28 @@ const initAudio = () => {
 };
 
 // 更改课程名
-const changeCourse = () => {
-	const target = $("#function > section > button")[0];
-	if ($("#course-input")[0].disabled) {
-		$("#course-input")[0].disabled = false;
-		target.innerHTML = '<i class="mdui-icon material-icons">spellcheck</i>';
-		target.title = "完成";
-		$("#course-input").focus();
+const changeCourse = (filename) => {
+	if (user.class.isInClass) {
+		sendInform("上课中无法修改课程名", "warn");
+		return;
+	}
+
+	const $course = $("#course-input");
+	const $target = $("#function > section > button")[0];
+	if (filename) {
+		$course.focus();
+		$course.val(filename);
 	} else {
-		$("#course-input")[0].disabled = true;
-		target.innerHTML = '<i class="mdui-icon material-icons">mode_edit</i>';
-		target.title = "更改";
-		sendInform("课程名已更改", "info");
+		if ($course[0].disabled) {
+			$course[0].disabled = false;
+			$course.focus();
+			$target.innerHTML = '<i class="mdui-icon material-icons">spellcheck</i>';
+			$target.title = "完成";
+		} else {
+			$course[0].disabled = true;
+			$target.innerHTML = '<i class="mdui-icon material-icons">mode_edit</i>';
+			$target.title = "更改";
+		}
 	}
 };
 
@@ -431,9 +434,11 @@ const toggleCourse = () => {
 				note: config.paintNode.toDataURL("image/png"),
 			});
 
-			// 开始上课，同时打开录音
 			initAudio().then(() => toggleRecord(true));
 			$("#present").hide();
+			$("#load")[0].disabled = true;
+			$("#upload")[0].disabled = true;
+			!$("#course-input")[0].disabled && toggleCourse();
 
 			user.class.isInClass = true;
 			user.class.speaker = user.username;
@@ -446,6 +451,10 @@ const toggleCourse = () => {
 		});
 		clearPaint();
 		toggleRecord(false);
+		$("#load")[0].disabled = false;
+		$("#upload")[0].disabled = false;
+		$("#course-input")[0].disabled && toggleCourse();
+
 		user.class.isInClass = false;
 	}
 
@@ -478,7 +487,6 @@ const toggleRecord = (flag = null) => {
 			$(
 				"#toggleRecord"
 			)[0].innerHTML = `<i class="mdui-icon material-icons">keyboard_voice</i> 开始录音`;
-
 			return;
 	}
 

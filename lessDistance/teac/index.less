@@ -145,7 +145,7 @@ main.main > aside {
 	article {
 		@pad: 15px;
 		height: calc(100vh - 50px - 2 * @pad);
-		min-height: 680px;
+		min-height: 700px;
 		margin-top: 50px + @pad;
 		margin-bottom: @pad;
 		min-width: 300px;
@@ -180,7 +180,8 @@ main.main > aside {
 			}
 		}
 
-		& > section:nth-child(2) {
+		& > section:nth-child(2),
+		& > section:nth-child(3) {
 			margin: 10px;
 			display: block;
 
@@ -192,19 +193,20 @@ main.main > aside {
 				transform: translateX(-50%);
 			}
 
-			& > input#load {
+			& > input {
 				visibility: hidden;
 			}
 		}
 
-		& > section:nth-child(5) {
+		& > section:nth-child(6) {
 			margin: 20px 0;
 
 			& > textarea,
 			& > input {
 				border: dashed 2px rgb(182, 182, 182);
 				border-radius: 2px;
-				width: 100%;
+				width: -moz-available;
+				width: -webkit-fill-available;
 				resize: none;
 				padding: 8px;
 				margin: 5px 0;
@@ -226,17 +228,12 @@ main.main > aside {
 			}
 		}
 
-		& > section:last-child {
-			position: absolute;
-			bottom: 2%;
-		}
-
 		button {
 			margin: 2px 0;
 		}
 
 		& > #clock {
-			margin: 20px;
+			margin: 20px 13px;
 			padding-bottom: 15px;
 			border: dashed 3px rgb(104, 104, 104);
 			border-radius: 5px;
