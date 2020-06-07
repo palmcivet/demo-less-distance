@@ -33,17 +33,15 @@ $(() => {
 		const $upload = $("#upload")[0];
 		$upload.addEventListener("change", () => {
 			uploadPdf($upload.files[0]);
-			if (!$("#course-input")[0].disabled) {
+			!$("#course-input")[0].disabled &&
 				changeCourse(getFileName($upload.files[0].name));
-			}
 		});
 
 		const $load = $("#load")[0];
 		$load.addEventListener("change", () => {
 			loadPdf($load.files[0]);
-			if (!$("#course-input")[0].disabled) {
+			!$("#course-input")[0].disabled &&
 				changeCourse(getFileName($load.files[0].name));
-			}
 		});
 
 		// 生成工具栏
@@ -221,19 +219,20 @@ const loadPdf = (file) => {
 const uploadPdf = (file) => {
 	const url = "https://www.uiofield.top/lessDistance" + "/interface/upload";
 	const formData = new FormData();
-	formData.append("name", file.name);
 	formData.append("file", file);
 
 	fetch(url, {
 		method: "POST",
 		body: formData,
+		mode: "cors",
 	})
-		.then((response) => {
-			response.blob();
-			let pdf = new Blob([blob], { type: "application/pdf" });
-			loadPdf(pdf);
+		.then((response) => response.blob())
+		.then((res) => new Blob([res], { type: "application/pdf" }))
+		.then((pdf) => loadPdf(pdf))
+		.then(() => {
+			$("#notify-box").children()[0].remove();
+			sendInform("上传成功", "info");
 		})
-		.then(() => sendInform("上传成功", "info"))
 		.catch(() => sendInform("上传失败，请重试或加载 PDF", "error"));
-	sendInform("正在上传处理，请稍等", "info");
+	sendInform("正在上传处理，请稍等", "wait", 0);
 };

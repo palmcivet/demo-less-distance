@@ -130,10 +130,10 @@ class Socket {
 		this.pongInterval = setInterval(() => {
 			this.pingPong = false;
 			if (this.pingPong === "ping") {
-				this.closeHandle("pingPong没有改变为pong"); // 没有返回 pong 重启 webSocket
+				this.closeHandle("pingPong 没有改变为 pong"); // 没有返回 pong 重启 webSocket
 			}
 			// 重置为 ping 若下一次 ping 发送失败 或者 pong 返回失败(pingPong 不会改成 pong)，将重启
-			console.log("返回pong");
+			console.log("返回 pong");
 			this.pingPong = "ping";
 		}, 20000);
 	}
@@ -397,13 +397,20 @@ function sendInform(msg, type, time = 2000, pos = { top: "10%", left: "10%" }) {
 			break;
 		case "info":
 			p.setAttribute("class", "info");
-			p.innerHTML = `<i class="mdui-icon material-icons">notifications</i> ${msg}`;
+			p.innerHTML = `<i class="mdui-icon material-icons">notifications</i>  ${msg}`;
+			break;
+		case "wait":
+			p.setAttribute("class", "wait");
+			p.innerHTML = `<div class="mdui-spinner mdui-spinner-colorful"></div>  ${msg}`;
+			break;
 		default:
 			break;
 	}
 	$("#notify-box")[0].append(p);
-
-	return setTimeout(() => $("#notify-box").children()[0].remove(), time);
+	mdui.mutation();
+	if (time) {
+		return setTimeout(() => $("#notify-box").children()[0].remove(), time);
+	}
 }
 
 // 保存文件
@@ -413,7 +420,7 @@ const saveFile = (blob, name) => {
 	proxy.href = blobUrl;
 	proxy.download = name;
 	proxy.click();
-	window.URL.revokeObjectURL(exportBlob);
+	window.URL.revokeObjectURL(blobUrl);
 };
 
 // 发送 WS 信息
@@ -542,14 +549,17 @@ const handleBegin = (message) => {
 	$(
 		"#clock"
 	).children()[0].innerHTML = `<i class="mdui-icon material-icons">access_alarm</i> 课程已进行`;
-	$("#course-name").val(message.class.course);
-	$("#course-name").on("click", () => {
-		let proxy = $("a#download")[0];
-		proxy.href = message.class.file;
-		proxy.download = name;
-		proxy.click();
-		$("#course-name").addClass("hover");
-	});
+	$("#course-name").text(message.course + " 课件");
+	if (message.file) {
+		$("#course-name").on("click", () => {
+			let proxy = $("a#download")[0];
+			proxy.href = message.file;
+			proxy.download = message.course;
+			proxy.target = "_blank";
+			proxy.click();
+			$("#course-name").addClass("hover");
+		});
+	}
 	config.slideNode.width = message.width;
 	config.slideNode.height = message.height;
 	config.noteNode.width = message.width;
@@ -585,7 +595,9 @@ const handleFinish = (message) => {
 	);
 	// 生成报告
 	$("#present").show();
-	$("#present").children()[0].innerHTML = `<h1>${user.class.courseName}</h1>
+	$("#present").children()[0].innerHTML = `<h1>${
+		user.class.courseName + (user.permission ? "" : " 推荐视频")
+	}</h1>
         <span class="k">授课人</span><span class="v">${message.speaker}</span>
         <span class="k">开始于</span><span class="v">${message.beginning}</span>
         <span class="k">课程时长</span><span class="v">${message.duration}</span>`;

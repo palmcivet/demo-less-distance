@@ -80,14 +80,7 @@
 ### `upload`
 - 方法：POST
 - URL：`interface/upload`
-- 发送：
-    Form Data 类型，形如以下的表单：
-    ```json
-    {
-        "name": "file-name",
-        "file": ""
-    }
-    ```
+- 发送：Form Data 类型，只有 `file` 一个字段
 - 返回：Blob 类型
 
 ## WS 接口

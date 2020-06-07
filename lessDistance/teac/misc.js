@@ -416,6 +416,7 @@ const changeCourse = (filename) => {
 const toggleCourse = () => {
 	if (!user.class.isInClass) {
 		let course = $("#course-input").val();
+		!$("#course-input")[0].disabled && changeCourse();
 		if (!course) {
 			sendInform("请填写课程名", "warn");
 			$("#course-input").focus();
@@ -433,16 +434,13 @@ const toggleCourse = () => {
 				slide: config.canvasNode.toDataURL("image/png"),
 				note: config.paintNode.toDataURL("image/png"),
 			});
-
 			initAudio().then(() => toggleRecord(true));
-			$("#present").hide();
-			$("#load")[0].disabled = true;
-			$("#upload")[0].disabled = true;
-			!$("#course-input")[0].disabled && toggleCourse();
-
 			user.class.isInClass = true;
 			user.class.speaker = user.username;
 			user.class.courseName = course;
+			$("#present").hide();
+			$("#load")[0].disabled = true;
+			$("#upload")[0].disabled = true;
 		}
 	} else {
 		sendText({
@@ -451,11 +449,10 @@ const toggleCourse = () => {
 		});
 		clearPaint();
 		toggleRecord(false);
+		user.class.isInClass = false;
 		$("#load")[0].disabled = false;
 		$("#upload")[0].disabled = false;
-		$("#course-input")[0].disabled && toggleCourse();
-
-		user.class.isInClass = false;
+		$("#course-input")[0].disabled && changeCourse();
 	}
 
 	$("#toggleCourse")[0].innerHTML = user.class.isInClass

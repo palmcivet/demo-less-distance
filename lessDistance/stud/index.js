@@ -239,7 +239,7 @@ const handleClock = () => {
 const handlePlayback = () => {
 	$.ajax({
 		method: "GET",
-		url: "/lessDistance/interface/getvideo",
+		url: "https://www.uiofield.top" + "/lessDistance/interface/getvideo",
 		xhrFields: {
 			withCredentials: true,
 		},
