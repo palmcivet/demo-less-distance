@@ -217,7 +217,7 @@ const loadPdf = (file) => {
 
 // 上传课件
 const uploadPdf = (file) => {
-	const url = "https://www.uiofield.top/lessDistance" + "/interface/upload";
+	const url = rootHttp + "/lessDistance/interface/upload";
 	const formData = new FormData();
 	formData.append("file", file);
 

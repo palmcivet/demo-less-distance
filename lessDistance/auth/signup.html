@@ -38,10 +38,10 @@
     </main>
     <div id="notify-box"> </div>
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/lessDistance/static/script/config.js"></script>
     <script src="index.js"></script>
     <script>
         function signup(e = null) {
-            const rootUrl = "https://www.uiofield.top/lessDistance";
             if (e === null || e.keyCode === 13) {
                 if ($("input[name='usertype']:checked").val() === undefined) {
                     sendInform("请选择用户类型", "warn");
@@ -56,7 +56,7 @@
                 } else {
                     $.ajax({
                         method: "POST",
-                        url: rootUrl + "/interface/register",
+                        url: rootHttp + "/lessDistance/interface/register",
                         headers: {
                             "Content-Type": "application/json",
                         },

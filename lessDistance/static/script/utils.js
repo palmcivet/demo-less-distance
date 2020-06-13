@@ -334,7 +334,7 @@ const initWebSocket = () => {
 		socketOnError: (e) => {
 			console.error(e);
 		},
-		socketUrl: "wss://www.uiofield.top/lessDistance/websocket",
+		socketUrl: rootWs + "/lessDistance/websocket",
 	};
 	user.chatConnect = new Socket(chatWs);
 	user.chatConnect.connect();
@@ -357,7 +357,7 @@ const initWebSocket = () => {
 		socketOnError: (e) => {
 			console.error(e);
 		},
-		socketUrl: "wss://www.uiofield.top/lessDistance/voice",
+		socketUrl: rootWs + "/lessDistance/voice",
 	};
 	user.audioConnect = new Socket(audioWs);
 	user.audioConnect.connect();
