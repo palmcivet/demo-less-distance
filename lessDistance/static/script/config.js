@@ -1,2 +1,2 @@
-const rootHttp = "https://www.uiofield.top";
-const rootWs = "wss://www.uiofield.top";
+const rootHttp = "https://www.example.com";
+const rootWs = "wss://www.example.com";
